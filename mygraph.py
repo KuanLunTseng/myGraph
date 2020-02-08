@@ -41,6 +41,9 @@ class Graph(object):
         
     def DFS(self):
         return {v.n:[v.pre, v.post, v.c] for v in self.V}
+        
+    def Dijkstra(self):
+        return {v.n:[v.d, v.pred] for v in self.V}
     
 # n : Name
 # c : Color
@@ -232,28 +235,29 @@ def TENSE(e):
         
 def RELAX(e):
     e.t.d = e.s.d + e.w
-    e.p = e.s
-    
+    e.t.pred = e.s
+
 def OutgoingEdges(G, s):
-    return [e for e in G.E if e.n[0] == s.n]
+    return [e for e in G.E if e.s == s]
     
 def IncomingEdges(G, s):
-    return [e for e in G.E if e.n[1] == s.n]
+    return [e for e in G.E if e.t == s]
     
 def Dijkstra(G, s):
     INITSSSP(G, s)
     pq = Heap(min = True)
     pq.Push(s, s.d)
-    while pq:
-        u = pq.Extract()[0]
-        for e in OutgoingEdges(G, s):
+    while not pq.IsEmpty():
+        u, dist = pq.Extract()
+        ## Trying to use two vertices instead of one edge
+        for e in OutgoingEdges(G, u):
             if TENSE(e):
                 RELAX(e)
                 if pq.IsInHeap(e.t):
                     pq.UpdateKey(e.t, e.t.d)
                 else:
                     pq.Push(e.t, e.t.d)
-     
+                    
 if __name__ == "__main__":
     
     # BFS test case
@@ -272,6 +276,12 @@ if __name__ == "__main__":
     
     # Dijkstra test case
     G, s = INITDijkstra()
+    
+   
     Dijkstra(G, s)
+    print(G.Dijkstra())
+    
+    #print(G.E)
+    #print([e.n for e in G.E if e.s == s])
     
     
