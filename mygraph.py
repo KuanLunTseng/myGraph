@@ -43,7 +43,7 @@ class Graph(object):
         return {v.n:[v.pre, v.post, v.c] for v in self.V}
         
     def Dijkstra(self):
-        return {v.n:[v.d, v.pred] for v in self.V}
+        return {v.n:[v.d, v.pred.n] for v in self.V if v.pred is not None}
     
 # n : Name
 # c : Color
@@ -56,7 +56,7 @@ class Vertex:
         self.c = 'W'
         self.v = v
         self.d = d
-        self.pred = pred 
+        self.pred = pred
         self.pre = 0
         self.post = 0
 
@@ -249,7 +249,6 @@ def Dijkstra(G, s):
     pq.Push(s, s.d)
     while not pq.IsEmpty():
         u, dist = pq.Extract()
-        ## Trying to use two vertices instead of one edge
         for e in OutgoingEdges(G, u):
             if TENSE(e):
                 RELAX(e)
@@ -257,6 +256,17 @@ def Dijkstra(G, s):
                     pq.UpdateKey(e.t, e.t.d)
                 else:
                     pq.Push(e.t, e.t.d)
+
+#def BFS(G, t, s, sp):
+                   
+def ReverseGraph(G):
+    new_Graph = Graph()
+    E = [Edge((e.t, e.s), w = e.w) for e in G.E]
+    INITGRAPH(new_Graph, G.V, E)
+    return new_Graph
+                   
+def NumOfShortestPaths(G, H, s, t):
+    Dijkstra(G, s)
                     
 if __name__ == "__main__":
     
@@ -275,11 +285,13 @@ if __name__ == "__main__":
     '''
     
     # Dijkstra test case
-    G, s = INITDijkstra()
     
-   
+    G, s = INITDijkstra()
     Dijkstra(G, s)
-    print(G.Dijkstra())
+    #print(G.Dijkstra())
+    print(G.Edges())
+    G = ReverseGraph(G)
+    print(G.Edges())
     
     #print(G.E)
     #print([e.n for e in G.E if e.s == s])
