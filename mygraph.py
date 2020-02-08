@@ -14,8 +14,12 @@ class Graph(object):
 
     def add_edge(self, edge):
         if edge.src and edge.dst in self.adjacent:
-            self.adjacent[v1].append(v2)
-            self.edges.append(edge)
+            if edge.directed:
+                self.adjacent[edge.src].append(edge.dst)
+                self.edges.append(edge)
+            ##if not edge.directed:
+                self.adjacent[edge.src].append(edge.dst)
+                self.adjacent[edge.dst].append(edge.src)
     
     def V(self):
         return [v.name for v in self.vertices]
@@ -37,6 +41,7 @@ class Edge:
         self.dst = v2
         self.name = (self.src.name, self.dst.name)
         self.weight = weight
+        self.directed = directed
     
 def BFS(G, s):
     Q = [s]
@@ -52,19 +57,25 @@ def BFS(G, s):
 
 if __name__ == "__main__":
     
-    v1 = Vertex('v1')
-    v2 = Vertex('v2')
-    graph = Graph()
+    r = Vertex('r')
+    s = Vertex('s')
+    t = Vertex('t')
+    u = Vertex('u')
+    v = Vertex('v')
+    w = Vertex('w')
+    x = Vertex('x')
+    y = Vertex('y')
     
-    graph.add_vertex(v1)
-    graph.add_vertex(v2)
+    V = [r, s, t, u, v, w, x, y]
     
-    e = (v1, v2)
+    G = Graph()
     
-    e1 = Edge(e)
+    for v in V:
+        G.add_vertex(v)
+        
+    e1 = Edge((s,t), directed = False)
+    ##G.add_edge(e1)
     
-    graph.add_edge(e1)
-    print(graph.V())
-    print(graph.E())
-    print(graph.adjacent[v1])
+    print(G.V())
     
+    print(G.E())
