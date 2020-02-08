@@ -1,55 +1,62 @@
 class Graph(object):
+    
     def __init__(self, dict=None):
         if dict == None:
             dict = {}
         self.graph_dict = dict
+        self.vertices = []
+        self.edge = []
         
-    def add_vertex(self, object):
-        if object not in self.graph_dict:
-            self.graph_dict[object] = []
-            self.weight = object.value
+    def add_vertex(self, vertex):
+        if vertex not in self.graph_dict:
+            self.graph_dict[vertex] = []
+            self.vertices.append(vertex.name)
+
+    def add_edge(self, edge):
         
-    '''
-    def vertices(self):
+        if edge.src and edge.dst in self.graph_dict:
+            self.graph_dict[v1].append(v2)
+
+    def V(self):
         return list(self.graph_dict.keys())
-    
+        
     def __str__(self):
         res = "vertices: "
-        #for k in self.__graph_dict
-    '''
+        for v in self.graph_dict:
+            res += v.name + " "
+        res += "\nedges: "
         
-class Vertex(object):
-    def __init__(self, dict):
-        self.mark = False
-        self.value = 0
-        self.predecessors = []
-        self.children = []
-        if dict == None:
-            vertex_dict = {}
-        self.vertex_dict = dict
+        return res
+        
+class Vertex:
+    def __init__(self, name, mark = False, value = 0):
+        self.name = name
+        self.mark = mark
+        self.value = value
 
-#class EDGE(object):
-    #def __init__(self, src, dst, weight=1, directed=True):
-        
-        
+class Edge:
+    def __init__(self, edge, weight = 1, directed = True):
+        v1, v2 = edge
+        self.src = v1
+        self.dst = v2
+        self.name = (self.src.name, self.dst.name)
+        self.weight = weight
+
 if __name__ == "__main__":
-
-    attributes = {"weight":1, "mark":True}
-    predecessors = {"v2", "v3"}
     
-    list1 = [1, 2, 3]
-    list2 = [5, 6, 7]
-    list1.append(list2)
-    print(list2)
-    
-    v1 = Vertex(predecessors)
+    v1 = Vertex('v1')
+    v2 = Vertex('v2')
     graph = Graph()
-    print("\nvertex_dict:")
-    print(v1.vertex_dict)\
     
     graph.add_vertex(v1)
-    #graph.add_vertex("v4")
-    print("\ngraph_dict:")
-    print(graph.graph_dict)
+    graph.add_vertex(v2)
+    
+    e = (v1, v2)
+    
+    e1 = Edge(e)
+    
+    graph.add_edge(e1)
    
-
+    
+    print(graph.__str__())
+    
