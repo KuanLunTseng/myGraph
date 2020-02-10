@@ -74,6 +74,19 @@ class Edge:
         self.w = w
         self.dir = dir
 
+        
+# l : Label
+# n : Name
+# num : Number of vertices in a component
+# o : Outgoing edges
+# i : Incoming edges
+class Component:
+    def __init__(self, V):
+        self.n = [v.n for v in V]
+        self.l = 0
+        self.num = len(V)
+        self.o = 
+        
 ''' 
 class MinHeap:
     def __init__(self):
