@@ -53,10 +53,9 @@ class Edge:
         
 class Component:
     def __init__(self, vertices):
-        self.name = [vertex.name for vertex in vertices]
+        self.name = [v.name for v in vertices]
         self.label = 0
         self.size = len(vertices)
-        #self.o = 
         
 def init_graph(graph, vertices, edges):
     for v in vertices:
@@ -274,8 +273,7 @@ def topological_sort(graph, source):
     dfs(graph, source)
     pre_post_Graph = {v:[v.pre, v.post, v.color] for v in graph.vertices}
     return [v[0].name for v in sorted(pre_post_Graph.items(), key=lambda x:x[1][1], reverse=True)] 
-     
-    
+       
 if __name__ == "__main__":
     
     # BFS test case
@@ -288,7 +286,7 @@ if __name__ == "__main__":
     
     # Dijkstra test case
     graph, source = init_dijkstra()
-    print(dijkstra(graph, source))
+    #print(dijkstra(graph, source))
     
     # Topological sort test case
     graph, source = init_topological_sort()
