@@ -1,114 +1,70 @@
 from heap import *
 import math
 
-# V : Vertices
-# E : Edges
-# t : Time
-# Adj : Adjacency list
 class Graph(object):
-    def __init__(self, dict=None):
-        if dict == None:
-            dict = {}
-        self.Adj = dict
-        self.V = []
-        self.E = []
-        self.t = 0
+    def __init__(self, dictionary=None):
+        if dictionary == None:
+            dictionary = {}
+        self.adjacency_list = dictionary
+        self.vertices = []
+        self.edges = []
+        self.time = 0
         
-    def add_vertex(self, v):
-        if v not in self.Adj:
-            self.Adj[v] = []
-            self.V.append(v)
+    def add_vertex(self, vertex):
+        if vertex not in self.adjacency_list:
+            self.adjacency_list[vertex] = []
+            self.vertices.append(vertex)
 
-    def add_edge(self, e):
-        if e.s and e.t in self.Adj:
-            if e.dir:
-                self.Adj[e.s].append(e.t)
-                self.E.append(e)
-            if not e.dir:
-                self.Adj[e.s].append(e.t)
-                self.Adj[e.t].append(e.s)
-                self.E.append(e)
-                self.E.append(Edge((e.s, e.s), dir = False))
+    def add_edge(self, edge):
+        if edge.source and edge.target in self.adjacency_list:
+            if edge.directed:
+                self.adjacency_list[edge.source].append(edge.target)
+                self.edges.append(edge)
+            if not edge.directed:
+                self.adjacency_list[edge.source].append(edge.target)
+                self.adjacency_list[edge.target].append(edge.source)
+                self.edges.append(edge)
+                self.edges.append(Edge((edge.source, edge.source), directed=False))
                 
     def Vertices(self):
-        return {v.n for v in self.V}
+        return {vertex.name for vertex in self.vertices}
         
     def Edges(self):
-        return [e.n for e in self.E]
+        return [edge.name for edge in self.edges]
         
-# n : Name
-# c : Color
-# v : Value
-# pred : Predecessor
-# pre & post : Enter and exit time of a vertex
 class Vertex:
-    def __init__(self, n, mark = False, v = 0, pred = None, d = 0):
-        self.n = n
-        self.c = 'W'
-        self.v = v
-        self.d = d
-        self.pred = pred
+    def __init__(self, name, mark=False, value=0, predesessor=None, distance=0):
+        self.name = name
+        self.color = 'white'
+        self.value = value
+        self.distance = distance
+        self.predesessor = predesessor
         self.pre = 0
         self.post = 0
-
-# s : Source
-# t : Target
-# n : Name
-# w : Weight
-# dir : Direted
+        
 class Edge:
-    def __init__(self, e, w = 1, dir = True):
-        v1, v2 = e
-        self.s = v1
-        self.t = v2
-        self.n = (self.s.n, self.t.n)
-        self.w = w
-        self.dir = dir
-
-##       
-# l : Label
-# n : Name
-# num : Number of vertices in a component
-# o : Outgoing edges
-# i : Incoming edges
+    def __init__(self, edge, weight=1, directed=True):
+        vertex_1, vertex_2 = edge
+        self.source = vertex_1
+        self.target = vertex_2
+        self.name = (self.source.name, self.target.name)
+        self.weight = weight
+        self.directed = directed
+        
 class Component:
-    def __init__(self, V):
-        self.n = [v.n for v in V]
-        self.l = 0
-        self.num = len(V)
+    def __init__(self, vertices):
+        self.name = [vertex.name for vertex in vertices]
+        self.label = 0
+        self.size = len(vertices)
         #self.o = 
         
-''' 
-class MinHeap:
-    def __init__(self):
-        self.heap = []
-    
-    def parent(self, i):
-        return (i-1)/2
+def init_graph(graph, vertices, edges):
+    for v in vertices:
+        graph.add_vertex(v)
+    for e in edges:
+        graph.add_edge(e)
         
-    def insertKey(self, k):
-        heappush(self.heap.k)
-        
-    def decreaseKey(self, i, new_val):
-        self.heap[i] = new_val
-        while(i != 0 and self.heap[self.parent(i)] > self.heap[i]):
-            self.heap[i], self.heap[self.parent(i)] = (self.heap[self.parent(i)], self.heap[i])
-    
-    def extractMin(self):
-        return heappop(self.heap)
-        
-    def deleteKey(self, i):
-        self.decreaseKey(i, -math.inf)
-        self.extractMin()
-'''
-
-def INITGRAPH(G, V, E):
-    for v in V:
-        G.add_vertex(v)
-    for e in E:
-        G.add_edge(e)
-         
-def INITBFS():
+def init_bfs():
     r = Vertex('r')
     s = Vertex('s')
     t = Vertex('t')
@@ -118,38 +74,39 @@ def INITBFS():
     x = Vertex('x')
     y = Vertex('y')
 
-    e1 = Edge((v, r), dir = False)
-    e2 = Edge((r, s), dir = False)
-    e3 = Edge((s, w), dir = False)
-    e4 = Edge((w, t), dir = False)
-    e5 = Edge((w, x), dir = False)
-    e6 = Edge((t, x), dir = False)
-    e7 = Edge((t, u), dir = False)
-    e8 = Edge((x, y), dir = False)
-    e9 = Edge((u, y), dir = False)
+    e1 = Edge((v, r), directed=False)
+    e2 = Edge((r, s), directed=False)
+    e3 = Edge((s, w), directed=False)
+    e4 = Edge((w, t), directed=False)
+    e5 = Edge((w, x), directed=False)
+    e6 = Edge((t, x), directed=False)
+    e7 = Edge((t, u), directed=False)
+    e8 = Edge((x, y), directed=False)
+    e9 = Edge((u, y), directed=False)
     
-    G = Graph()
-    V = [r, s, t, u, v, w, x, y]
-    E = [e1, e2, e3, e4, e5, e6, e7, e8, e9]
+    graph = Graph()
+    vertices = [r, s, t, u, v, w, x, y]
+    edges = [e1, e2, e3, e4, e5, e6, e7, e8, e9]
+    source = s
     
-    INITGRAPH(G, V, E)
+    init_graph(graph, vertices, edges)
     
-    return G, s
+    return graph, source
     
-def BFS(G, s):
-    Q = [s]
-    while Q:
-        u = Q.pop(0)
-        for v in G.Adj[u]:
-            if v.c == 'W':
-                v.c = 'G'
-                v.v = u.v + 1
-                v.pred = u
-                Q.append(v)
-        u.c = 'B'
-    return {v.n:[v.v, v.c] for v in G.V}
-     
-def INITDFS():
+def bfs(graph, source):
+    queue = [source]
+    while queue:
+        u = queue.pop(0)
+        for v in graph.adjacency_list[u]:
+            if v.color == 'white':
+                v.color = 'grey'
+                v.value = u.value + 1
+                v.predesessor = u
+                queue.append(v)
+        u.color = 'black'
+    return {v.name:[v.value, v.color] for v in graph.vertices}
+  
+def init_dfs():
     v1 = Vertex('v1')
     v2 = Vertex('v2')
     v3 = Vertex('v3')
@@ -174,33 +131,34 @@ def INITDFS():
     e13 = Edge((v7, v8))
     e14 = Edge((v8, v4))
 
-    G = Graph()
-    V = [v1, v2, v3, v4, v5, v6, v7, v8]
-    E = [e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14]
+    graph = Graph()
+    vertices = [v1, v2, v3, v4, v5, v6, v7, v8]
+    edges = [e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14]
+    source = v1
     
-    INITGRAPH(G, V, E)
+    init_graph(graph, vertices, edges)
     
-    return G, v1
-    
-def DFS(G, s):
-    G.t = 0
-    for u in G.V:
-        if u.c == 'W':
-            DFS_Visit(G, u)
-    return {v.n:[v.pre, v.post, v.c] for v in G.V}
+    return graph, source
+  
+def dfs(graph, source):
+    graph.time = 0
+    for u in graph.vertices:
+        if u.color == 'white':
+            dfs_visit(graph, u)
+    return {v.name:[v.pre, v.post, v.color] for v in graph.vertices}
 
-def DFS_Visit(G, u):
-    u.c = 'G'
-    G.t = G.t + 1
-    u.pre = G.t
-    for v in G.Adj[u]:
-        if v.c == 'W':
-            DFS_Visit(G, v)
-    u.c = 'B'
-    G.t = G.t + 1
-    u.post = G.t
-   
-def INITDijkstra():
+def dfs_visit(graph, u):
+    u.color = 'grey'
+    graph.time = graph.time + 1
+    u.pre = graph.time
+    for v in graph.adjacency_list[u]:
+        if v.color == 'white':
+            dfs_visit(graph, v)
+    u.color = 'black'
+    graph.time = graph.time + 1
+    u.post = graph.time
+  
+def init_dijkstra():
     v1 = Vertex('v1')
     v2 = Vertex('v2')
     v3 = Vertex('v3')
@@ -209,62 +167,60 @@ def INITDijkstra():
     v6 = Vertex('v6')
     v7 = Vertex('v7')
 
-    e1 = Edge((v1, v2), w = 3)
-    e2 = Edge((v1, v3), w = 4)
-    e3 = Edge((v2, v4), w = 12)
-    e4 = Edge((v3, v4), w = 5)
-    e5 = Edge((v3, v5), w = 0)
-    e6 = Edge((v5, v6), w = 3)
-    e7 = Edge((v5, v7), w = 10)
-    e8 = Edge((v7, v3), w = 8)
-    e9 = Edge((v7, v1), w = 4)
-    e10 = Edge((v2, v5), w = 2)
-    e11 = Edge((v2, v3), w = 7)
+    e1 = Edge((v1, v2), weight=3)
+    e2 = Edge((v1, v3), weight=4)
+    e3 = Edge((v2, v4), weight=12)
+    e4 = Edge((v3, v4), weight=5)
+    e5 = Edge((v3, v5), weight=0)
+    e6 = Edge((v5, v6), weight=3)
+    e7 = Edge((v5, v7), weight=10)
+    e8 = Edge((v7, v3), weight=8)
+    e9 = Edge((v7, v1), weight=4)
+    e10 = Edge((v2, v5), weight=2)
+    e11 = Edge((v2, v3), weight=7)
     
-    G = Graph()
-    V = [v1, v2, v3, v4, v5, v6, v7]
-    E = [e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11]
+    graph = Graph()
+    vertices = [v1, v2, v3, v4, v5, v6, v7]
+    edges = [e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11]
+    source = v1
     
-    INITGRAPH(G, V, E)
+    init_graph(graph, vertices, edges)
     
-    return G, v1
-   
-def INITSSSP(G, s):
-    s.d = 0
-    s.pred = None
-    for v in [v for v in G.V if v != s]:
-        v.d = math.inf
-        v.p = None
-        
-def TENSE(e):
-    return e.t.d > e.s.d + e.w
-        
-def RELAX(e):
-    e.t.d = e.s.d + e.w
-    e.t.pred = e.s
-
-def OutgoingEdges(G, s):
-    return [e for e in G.E if e.s == s]
+    return graph, source
     
-def IncomingEdges(G, s):
-    return [e for e in G.E if e.t == s]
+def init_sssp(graph, source):
+    source.distance = 0
+    source.pred = None
+    for v in [v for v in graph.vertices if v != source]:
+        v.distance = math.inf
+        v.predesessor = None
     
-def Dijkstra(G, s):
-    INITSSSP(G, s)
+def tense(edge):    
+    return edge.target.distance > edge.source.distance + edge.weight
+    
+def relax(edge):
+    edge.target.distance = edge.source.distance + edge.weight
+    edge.target.predesessor = edge.source
+    
+def outgoing_edges(graph, source):
+    return [e for e in graph.edges if e.source == source]
+    
+def dijkstra(graph, source):
+    init_sssp(graph, source)
     pq = Heap(min = True)
-    pq.Push(s, s.d)
+    pq.Push(source, source.distance)
     while not pq.IsEmpty():
-        u, dist = pq.Extract()
-        for e in OutgoingEdges(G, u):
-            if TENSE(e):
-                RELAX(e)
-                if pq.IsInHeap(e.t):
-                    pq.UpdateKey(e.t, e.t.d)
+        u, distance = pq.Extract()
+        for e in outgoing_edges(graph, u):
+            if tense(e):
+                relax(e)
+                if pq.IsInHeap(e.target):
+                    pq.UpdateKey(e.target, e.target.distance)
                 else:
-                    pq.Push(e.t, e.t.d)
-    return {v.n:[v.d, v.pred.n] for v in G.V if v.pred is not None}
-
-def INITTOPO():
+                    pq.Push(e.target, e.target.distance)
+    return {v.name:[v.distance, v.predesessor.name] for v in graph.vertices if v.predesessor is not None}
+    
+def init_topological_sort():
     a = Vertex('a')
     b = Vertex('b')
     c = Vertex('c')
@@ -305,50 +261,37 @@ def INITTOPO():
     e21 = Edge((j, n))
     e22 = Edge((o, l))
     
+    graph = Graph()
+    vertices = [a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p]
+    edges = [e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21]
+    source = a
     
+    init_graph(graph, vertices, edges)
     
-    G = Graph()
-    V = [a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p]
-    E = [e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21]
+    return graph, source
     
-    INITGRAPH(G, V, E)
-    
-    return G, a
-                    
-def TopologicalSort(G, s):
-    DFS(G, s)
-    prepostGraph = {v:[v.pre, v.post, v.c] for v in G.V}
-    return [v[0].n for v in sorted(prepostGraph.items(), key = lambda x : x[1][1], reverse = True)] 
+def topological_sort(graph, source):
+    dfs(graph, source)
+    pre_post_Graph = {v:[v.pre, v.post, v.color] for v in graph.vertices}
+    return [v[0].name for v in sorted(pre_post_Graph.items(), key=lambda x:x[1][1], reverse=True)] 
      
-##
-#def NSP_BFS(G, t, s, sp):
-                   
-def ReverseGraph(G):
-    new_Graph = Graph()
-    E = [Edge((e.t, e.s), w = e.w) for e in G.E]
-    INITGRAPH(new_Graph, G.V, E)
-    return new_Graph
-                   
-def NumOfShortestPaths(G, H, s, t):
-    Dijkstra(G, s)
-                    
+    
 if __name__ == "__main__":
     
     # BFS test case
-    G, s = INITBFS()
-    print(BFS(G, s))
+    graph, source = init_bfs()
+    #print(bfs(graph, source))
     
     # DFS test case
-    G, s = INITDFS()
-    print(DFS(G, s))
-    
-    # Topological sort test case
-    G, s = INITTOPO()
-    print(TopologicalSort(G, s))
+    graph, source = init_dfs()
+    #print(dfs(graph, source))
     
     # Dijkstra test case
-    G, s = INITDijkstra()
-    print(Dijkstra(G, s))
-
+    graph, source = init_dijkstra()
+    print(dijkstra(graph, source))
+    
+    # Topological sort test case
+    graph, source = init_topological_sort()
+    #print(topological_sort(graph, source))
     
     
