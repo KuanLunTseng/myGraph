@@ -26,7 +26,7 @@ class Graph(object):
                 self.E.append(e)
             if not e.dir:
                 self.Adj[e.s].append(e.t)
-                self.Adj[e.s].append(e.s)
+                self.Adj[e.t].append(e.s)
                 self.E.append(e)
                 self.E.append(Edge((e.s, e.s), dir = False))
                 
@@ -36,15 +36,6 @@ class Graph(object):
     def Edges(self):
         return [e.n for e in self.E]
         
-    def BFS(self):
-        return {v.n:[v.v, v.c] for v in self.V}
-        
-    def DFS(self):
-        return {v.n:[v.pre, v.post, v.c] for v in self.V}
-        
-    def Dijkstra(self):
-        return {v.n:[v.d, v.pred.n] for v in self.V if v.pred is not None}
-    
 # n : Name
 # c : Color
 # v : Value
@@ -74,7 +65,7 @@ class Edge:
         self.w = w
         self.dir = dir
 
-        
+##       
 # l : Label
 # n : Name
 # num : Number of vertices in a component
@@ -85,7 +76,7 @@ class Component:
         self.n = [v.n for v in V]
         self.l = 0
         self.num = len(V)
-        self.o = 
+        #self.o = 
         
 ''' 
 class MinHeap:
@@ -156,6 +147,7 @@ def BFS(G, s):
                 v.pred = u
                 Q.append(v)
         u.c = 'B'
+    return {v.n:[v.v, v.c] for v in G.V}
      
 def INITDFS():
     v1 = Vertex('v1')
@@ -195,6 +187,7 @@ def DFS(G, s):
     for u in G.V:
         if u.c == 'W':
             DFS_Visit(G, u)
+    return {v.n:[v.pre, v.post, v.c] for v in G.V}
 
 def DFS_Visit(G, u):
     u.c = 'G'
@@ -269,8 +262,66 @@ def Dijkstra(G, s):
                     pq.UpdateKey(e.t, e.t.d)
                 else:
                     pq.Push(e.t, e.t.d)
+    return {v.n:[v.d, v.pred.n] for v in G.V if v.pred is not None}
 
-#def BFS(G, t, s, sp):
+def INITTOPO():
+    a = Vertex('a')
+    b = Vertex('b')
+    c = Vertex('c')
+    d = Vertex('d')
+    e = Vertex('e')
+    f = Vertex('f')
+    g = Vertex('g')
+    h = Vertex('h')
+    i = Vertex('i')
+    j = Vertex('j')
+    k = Vertex('k')
+    l = Vertex('l')
+    m = Vertex('m')
+    n = Vertex('n')
+    o = Vertex('o')
+    p = Vertex('p')
+    
+    e1 = Edge((a, b))
+    e2 = Edge((e, i))
+    e3 = Edge((i, n))
+    e4 = Edge((n, o))
+    e5 = Edge((o, k))
+    e6 = Edge((k, h))
+    e7 = Edge((k, l))
+    e8 = Edge((l, p))
+    e9 = Edge((f, g))
+    e10 = Edge((j, m))
+    e11 = Edge((g, a))
+    e12 = Edge((f, b))
+    e13 = Edge((g, c))
+    e14 = Edge((d, c))
+    e15 = Edge((h, c))
+    e16 = Edge((h, d))
+    e17 = Edge((f, l))
+    e18 = Edge((g, k))
+    e19 = Edge((l, h))
+    e20 = Edge((m, i))
+    e21 = Edge((j, n))
+    e22 = Edge((o, l))
+    
+    
+    
+    G = Graph()
+    V = [a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p]
+    E = [e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21]
+    
+    INITGRAPH(G, V, E)
+    
+    return G, a
+                    
+def TopologicalSort(G, s):
+    DFS(G, s)
+    prepostGraph = {v:[v.pre, v.post, v.c] for v in G.V}
+    return [v[0].n for v in sorted(prepostGraph.items(), key = lambda x : x[1][1], reverse = True)] 
+     
+##
+#def NSP_BFS(G, t, s, sp):
                    
 def ReverseGraph(G):
     new_Graph = Graph()
@@ -284,29 +335,20 @@ def NumOfShortestPaths(G, H, s, t):
 if __name__ == "__main__":
     
     # BFS test case
-    '''
     G, s = INITBFS()
-    BFS(G, s) 
-    print(G.BFS())
-    '''
+    print(BFS(G, s))
     
     # DFS test case
-    '''
     G, s = INITDFS()
-    #DFS(G, s)
-    #print(G.DFS())
-    '''
+    print(DFS(G, s))
+    
+    # Topological sort test case
+    G, s = INITTOPO()
+    print(TopologicalSort(G, s))
     
     # Dijkstra test case
-    
     G, s = INITDijkstra()
-    Dijkstra(G, s)
-    #print(G.Dijkstra())
-    print(G.Edges())
-    G = ReverseGraph(G)
-    print(G.Edges())
-    
-    #print(G.E)
-    #print([e.n for e in G.E if e.s == s])
+    print(Dijkstra(G, s))
+
     
     
