@@ -53,9 +53,10 @@ class Edge:
         
 class Component:
     def __init__(self, vertices):
-        self.name = [v.name for v in vertices]
+        self.name = [v.name for v in self.vertices]
         self.label = 0
-        self.size = len(vertices)
+        self.size = len(self.vertices)
+        self.vertices = []
         
 def init_graph(graph, vertices, edges):
     for v in vertices:
@@ -63,7 +64,7 @@ def init_graph(graph, vertices, edges):
     for e in edges:
         graph.add_edge(e)
         
-def init_bfs():
+def init_graph_bfs():
     r = Vertex('r')
     s = Vertex('s')
     t = Vertex('t')
@@ -103,9 +104,8 @@ def bfs(graph, source):
                 v.predesessor = u
                 queue.append(v)
         u.color = 'black'
-    return {v.name:[v.value, v.color] for v in graph.vertices}
   
-def init_dfs():
+def init_graph_dfs():
     v1 = Vertex('v1')
     v2 = Vertex('v2')
     v3 = Vertex('v3')
@@ -144,7 +144,6 @@ def dfs(graph, source):
     for u in graph.vertices:
         if u.color == 'white':
             dfs_visit(graph, u)
-    return {v.name:[v.pre, v.post, v.color] for v in graph.vertices}
 
 def dfs_visit(graph, u):
     u.color = 'grey'
@@ -157,7 +156,7 @@ def dfs_visit(graph, u):
     graph.time = graph.time + 1
     u.post = graph.time
   
-def init_dijkstra():
+def init_graph_dijkstra():
     v1 = Vertex('v1')
     v2 = Vertex('v2')
     v3 = Vertex('v3')
@@ -203,8 +202,11 @@ def relax(edge):
     
 def outgoing_edges(graph, source):
     return [e for e in graph.edges if e.source == source]
-    
+
 def dijkstra(graph, source):
+    """
+    Runtime : O(E+VlogV)
+    """
     init_sssp(graph, source)
     pq = Heap(min = True)
     pq.Push(source, source.distance)
@@ -217,9 +219,8 @@ def dijkstra(graph, source):
                     pq.UpdateKey(e.target, e.target.distance)
                 else:
                     pq.Push(e.target, e.target.distance)
-    return {v.name:[v.distance, v.predesessor.name] for v in graph.vertices if v.predesessor is not None}
     
-def init_topological_sort():
+def init_graph_topological_sort():
     a = Vertex('a')
     b = Vertex('b')
     c = Vertex('c')
@@ -271,25 +272,84 @@ def init_topological_sort():
     
 def topological_sort(graph, source):
     dfs(graph, source)
-    pre_post_Graph = {v:[v.pre, v.post, v.color] for v in graph.vertices}
-    return [v[0].name for v in sorted(pre_post_Graph.items(), key=lambda x:x[1][1], reverse=True)] 
+    pre_post_graph = {v:[v.pre, v.post, v.color] for v in graph.vertices}
+    return pre_post_graph
+       
+def init_graph_bellman_ford():
+    v1 = Vertex('v1')
+    v2 = Vertex('v2')
+    v3 = Vertex('v3')
+    v4 = Vertex('v4')
+    v5 = Vertex('v5')
+    v6 = Vertex('v6')
+    v7 = Vertex('v7')
+
+    e1 = Edge((v1, v2), weight=4)
+    e2 = Edge((v1, v3), weight=10)
+    e3 = Edge((v1, v4), weight=3)
+    e4 = Edge((v2, v3), weight=8)
+    e5 = Edge((v2, v5), weight=3)
+    e6 = Edge((v3, v5), weight=-5)
+    e7 = Edge((v3, v6), weight=-7)
+    e8 = Edge((v4, v3), weight=6)
+    e9 = Edge((v4, v6), weight=2)
+    e10 = Edge((v5, v6), weight=-3)
+    e11 = Edge((v5, v7), weight=1)
+    e12 = Edge((v7, v6), weight=-5)
+    
+    graph = Graph()
+    vertices = [v1, v2, v3, v4, v5, v6, v7]
+    edges = [e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12]
+    source = v1
+    
+    init_graph(graph, vertices, edges)
+    
+    return graph, source
+
+def bellman_ford(graph, source):
+    """
+    Runtime : O(VE)
+    """
+    init_sssp(graph, source)
+    for v in graph.vertices:
+        for e in graph.edges:
+            if tense(e):
+                relax(e)
+      
+def is_negative_cycle(graph, source):
+    bellman_ford(graph, source)
+    for e in graph.edges:
+        if tense(e):
+            return True
+    return False
        
 if __name__ == "__main__":
     
     # BFS test case
-    graph, source = init_bfs()
-    #print(bfs(graph, source))
+    graph, source = init_graph_bfs()
+    bfs(graph, source)
+    #print({v.name:[v.value, v.color] for v in graph.vertices})
     
     # DFS test case
-    graph, source = init_dfs()
-    #print(dfs(graph, source))
+    graph, source = init_graph_dfs()
+    dfs(graph, source)
+    #print({v.name:[v.pre, v.post, v.color] for v in graph.vertices})
     
     # Dijkstra test case
-    graph, source = init_dijkstra()
-    #print(dijkstra(graph, source))
+    graph, source = init_graph_dijkstra()
+    dijkstra(graph, source)
+    #print({v.name:[v.distance, v.predesessor.name] for v in graph.vertices if v.predesessor is not None})
     
     # Topological sort test case
-    graph, source = init_topological_sort()
-    #print(topological_sort(graph, source))
+    graph, source = init_graph_topological_sort()
+    pre_post_graph = topological_sort(graph, source)
+    #print([v[0].name for v in sorted(pre_post_graph.items(), key=lambda x:x[1][1], reverse=True)])
+    
+    # Bellman-For test case
+    graph, source = init_graph_bellman_ford()
+    bellman_ford(graph, source)
+    #print({v.name:[v.distance, v.predesessor.name] for v in graph.vertices if v.predesessor is not None})
+    
+    
     
     
