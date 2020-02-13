@@ -26,11 +26,8 @@ class Graph(object):
                 self.edges.append(edge)
                 self.edges.append(Edge((edge.source, edge.source), directed=False))
                 
-    def Vertices(self):
-        return {vertex.name for vertex in self.vertices}
-        
-    def Edges(self):
-        return [edge.name for edge in self.edges]
+    def __str__(self):
+        return '\nVertices :\n%s\n\nEdges :\n%s' %(str([v.name for v in self.vertices]), str([e.name for e in self.edges]))    
         
 class Vertex:
     def __init__(self, name, mark=False, value=0, predesessor=None, distance=0):
@@ -51,12 +48,13 @@ class Edge:
         self.weight = weight
         self.directed = directed
         
-class Component:
+class Component(Graph):
     def __init__(self, vertices):
         self.name = [v.name for v in self.vertices]
         self.label = 0
         self.size = len(self.vertices)
         self.vertices = []
+
         
 def init_graph(graph, vertices, edges):
     for v in vertices:
@@ -324,7 +322,7 @@ def is_negative_cycle(graph, source):
     return False
        
 if __name__ == "__main__":
-    
+
     # BFS test case
     graph, source = init_graph_bfs()
     bfs(graph, source)
@@ -349,7 +347,3 @@ if __name__ == "__main__":
     graph, source = init_graph_bellman_ford()
     bellman_ford(graph, source)
     #print({v.name:[v.distance, v.predesessor.name] for v in graph.vertices if v.predesessor is not None})
-    
-    
-    
-    
