@@ -24,7 +24,7 @@ class Graph(object):
                 self.adjacency_list[edge.source].append(edge.target)
                 self.adjacency_list[edge.target].append(edge.source)
                 self.edges.append(edge)
-                self.edges.append(Edge((edge.target, edge.source), directed=False))
+                self.edges.append(Edge((edge.target, edge.source), directed=False, weight=edge.weight))
                 
     def __str__(self):
         return '\nVertices :\n%s\n\nEdges :\n%s' %(str([v.name for v in self.vertices]), str([e.name for e in self.edges]))    
@@ -39,6 +39,7 @@ class Vertex:
         self.predesessor = predesessor
         self.pre = 0
         self.post = 0
+        self.set = []
         
 class Edge:
     def __init__(self, edge, weight=1, directed=True):
@@ -59,7 +60,7 @@ class Component(Vertex):
         self.outgoing_edges = []
         for v in vertices:
             v.label = self.label
-              
+       
 def init_graph(graph, vertices, edges):
     for v in vertices:
         graph.add_vertex(v)
@@ -342,7 +343,6 @@ def init_boruvka():
     c6 = Component([v6], label=5)
     c7 = Component([v7], label=6)
     
-    
     e1 = Edge((c1, c2), directed=False, weight=26)
     e2 = Edge((c1, c3), directed=False, weight=14)
     e3 = Edge((c1, c4), directed=False, weight=4)
@@ -366,6 +366,7 @@ def init_boruvka():
         c.outgoing_edges = [outgoing_edges(graph, v) for v in c.vertices]
     
     return graph, source
+    
 """
 def count_and_label(F):
     count = 0
@@ -382,8 +383,68 @@ def boruvka(graph, source):
         count = count_and_label(F)
     return F
 """
+
+def init_kruskal():
+    v1 = Vertex('v1')
+    v2 = Vertex('v2')
+    v3 = Vertex('v3')
+    v4 = Vertex('v4')
+    v5 = Vertex('v5')
+    v6 = Vertex('v6')
+    v7 = Vertex('v7')
+
+    e1 = Edge((v1, v2), directed=False, weight=26)
+    e2 = Edge((v1, v3), directed=False, weight=14)
+    e3 = Edge((v1, v4), directed=False, weight=4)
+    e4 = Edge((v2, v3), directed=False, weight=30)
+    e5 = Edge((v3, v4), directed=False, weight=12)
+    e6 = Edge((v2, v5), directed=False, weight=16)
+    e7 = Edge((v5, v3), directed=False, weight=3)
+    e8 = Edge((v4, v6), directed=False, weight=18)
+    e9 = Edge((v6, v3), directed=False, weight=2)
+    e10 = Edge((v6, v5), directed=False, weight=10)
+    e11 = Edge((v6, v7), directed=False, weight=8)
+    e12 = Edge((v5, v7), directed=False, weight=5)
+    
+    graph = Graph()
+    vertices = [v1, v2, v3, v4, v5, v6, v7]
+    edges = [e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12]
+    source = v3
+    
+    init_graph(graph, vertices, edges)
+    
+    return graph, source
+
+def make_set(vertex):
+    vertex.set.append(vertex)
+
+def find(vertex):
+    return vertex.set
+    
+def union(u, v):
+    print(u.name)
+    print([u.name for u in u.set])
+    
+def kruskal(graph, source):
+    """
+    Joseph Kruskal in 1956
+    Runtime : O(ElogV)
+    """
+    graph.edges = sorted(graph.edges, key=lambda x:x.weight)
+    print([(e.name, e.weight) for e in graph.edges])
+    F = (graph.vertices, [])
+    for v in graph.vertices:
+        make_set(v)
+    for i in range(int(len(graph.edges)/2)):
+        edge = graph.edges[i*2]
+        u, v = edge.source, edge.target
+        if find(u) != find(v):
+            union(u, v)
+            #F.append()
+
 if __name__ == "__main__":
-    '''
+    
+    """
     # BFS test case
     graph, source = init_graph_bfs()
     bfs(graph, source)
@@ -397,22 +458,26 @@ if __name__ == "__main__":
     # Dijkstra test case
     graph, source = init_graph_dijkstra()
     dijkstra(graph, source)
-    print({v.name:[v.distance, v.predesessor.name] for v in graph.vertices if v.predesessor is not None})
+    #print({v.name:[v.distance, v.predesessor.name] for v in graph.vertices if v.predesessor is not None})
     
     # Topological sort test case
     graph, source = init_graph_topological_sort()
     pre_post_graph = topological_sort(graph, source)
     #print([v[0].name for v in sorted(pre_post_graph.items(), key=lambda x:x[1][1], reverse=True)])
     
-    # Bellman-For test case
+    # Bellman-Ford test case
     graph, source = init_graph_bellman_ford()
     bellman_ford(graph, source)
     #print({v.name:[v.distance, v.predesessor.name] for v in graph.vertices if v.predesessor is not None})
-    '''
     
+    ## Not yet done
     graph, source = init_boruvka()
-    print(str(graph))
+    #print(str(graph))
     #boruvka(graph, source)
+    """
+    
+    graph, source = init_kruskal()
+    kruskal(graph, source)
     
     
     
