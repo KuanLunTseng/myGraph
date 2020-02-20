@@ -419,11 +419,14 @@ def make_set(vertex):
     vertex.set.append(vertex)
 
 def find(vertex):
-    return vertex.set
+    return sorted(set(vertex.set), key=lambda x:x.name)
     
 def union(u, v):
-    print(u.name)
-    print([u.name for u in u.set])
+    u.set.extend(v.set)
+    u.set = sorted(u.set, key=lambda x:x.name)
+    for q in u.set:
+        q.set = u.set
+    v.set = u.set = list(set(u.set))
     
 def kruskal(graph, source):
     """
@@ -431,16 +434,20 @@ def kruskal(graph, source):
     Runtime : O(ElogV)
     """
     graph.edges = sorted(graph.edges, key=lambda x:x.weight)
-    print([(e.name, e.weight) for e in graph.edges])
     F = (graph.vertices, [])
+    edges = []
     for v in graph.vertices:
         make_set(v)
-    for i in range(int(len(graph.edges)/2)):
+    for i in range(int(len(graph.edges)/2)):    # undirected edges are bi-directional 
         edge = graph.edges[i*2]
         u, v = edge.source, edge.target
         if find(u) != find(v):
             union(u, v)
-            #F.append()
+            edges.append(edge)
+            edges.append(graph.edges[i+1])      # adding another edge 
+    mst = Graph()
+    init_graph(mst, graph.vertices, edges)
+    return mst
 
 if __name__ == "__main__":
     
@@ -477,7 +484,9 @@ if __name__ == "__main__":
     """
     
     graph, source = init_kruskal()
-    kruskal(graph, source)
+    mst = kruskal(graph, source)
+    print([v.name for v in mst.vertices])
+    print([(e.name, e.weight) for e in mst.edges])
     
     
     
