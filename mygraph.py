@@ -24,7 +24,8 @@ class Graph(object):
                 self.adjacency_list[edge.source].append(edge.target)
                 self.adjacency_list[edge.target].append(edge.source)
                 self.edges.append(edge)
-                self.edges.append(Edge((edge.target, edge.source), directed=False, weight=edge.weight))
+                edge.directed = False
+                self.edges.append(Edge((edge.target, edge.source), weight=edge.weight))
                 
     def __str__(self):
         return '\nVertices :\n%s\n\nEdges :\n%s' %(str([v.name for v in self.vertices]), str([e.name for e in self.edges]))    
@@ -366,15 +367,14 @@ def init_boruvka():
         c.outgoing_edges = [outgoing_edges(graph, v) for v in c.vertices]
     
     return graph, source
-    
-"""
+
+"""    
 def count_and_label(F):
     count = 0
     
 def add_all_safe_edges(edges, F, count):
         for i in range(count):
-            
-    
+               
 def boruvka(graph, source):
     F = graph.vertices, []
     count = count_and_label(F)
@@ -409,14 +409,13 @@ def init_kruskal():
     graph = Graph()
     vertices = [v1, v2, v3, v4, v5, v6, v7]
     edges = [e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12]
-    source = v3
     
     init_graph(graph, vertices, edges)
     
-    return graph, source
+    return graph
 
 def make_set(vertex):
-    vertex.set.append(vertex)
+    vertex.set = [vertex]
 
 def find(vertex):
     return sorted(set(vertex.set), key=lambda x:x.name)
@@ -428,27 +427,46 @@ def union(u, v):
         q.set = u.set
     v.set = u.set = list(set(u.set))
     
-def kruskal(graph, source):
+def kruskal(graph):
     """
     Joseph Kruskal in 1956
     Runtime : O(ElogV)
     """
     graph.edges = sorted(graph.edges, key=lambda x:x.weight)
-    F = (graph.vertices, [])
     edges = []
     for v in graph.vertices:
         make_set(v)
-    for i in range(int(len(graph.edges)/2)):    # undirected edges are bi-directional 
-        edge = graph.edges[i*2]
+    for e in range(int(len(graph.edges)/2)):    # undirected edges are bi-directional 
+        edge = graph.edges[e*2]
         u, v = edge.source, edge.target
         if find(u) != find(v):
             union(u, v)
+            edge.directed = True
             edges.append(edge)
-            edges.append(graph.edges[i+1])      # adding another edge 
+            graph.edges[(e*2)+1].directed = True
+            edges.append(graph.edges[(e*2)+1])
     mst = Graph()
     init_graph(mst, graph.vertices, edges)
     return mst
-
+     
+def min_total_weight(temp_graph, graph):
+    if (int(sum([e.weight for e in temp_graph.edges])/2) < int(sum([e.weight for e in graph.edges])/2)):
+        return temp_graph
+    else:
+        return graph
+    
+def second_best_minimum_spanning_tree(graph):
+    mst = kruskal(graph)
+    sbmst = graph
+    for e in range(int(len(mst.edges)/2)):
+        graph.edges.remove(mst.edges[e*2])
+        graph.edges.remove(mst.edges[(e*2)+1])
+        temp_graph = kruskal(graph)
+        sbmst = min_total_weight(temp_graph, sbmst)
+        graph.edges.append(mst.edges[e*2])
+        graph.edges.append(mst.edges[(e*2)+1])
+    return sbmst
+        
 if __name__ == "__main__":
     
     """
@@ -476,17 +494,25 @@ if __name__ == "__main__":
     graph, source = init_graph_bellman_ford()
     bellman_ford(graph, source)
     #print({v.name:[v.distance, v.predesessor.name] for v in graph.vertices if v.predesessor is not None})
+    """
     
+    graph = init_kruskal()
+    mst = kruskal(graph)
+    print(int(sum([e.weight for e in mst.edges])/2))
+    print(mst)
+    
+    graph = init_kruskal()
+    sbmst = second_best_minimum_spanning_tree(graph)
+    print(int(sum([e.weight for e in sbmst.edges])/2))
+    print(sbmst)
+
     ## Not yet done
     graph, source = init_boruvka()
     #print(str(graph))
     #boruvka(graph, source)
-    """
     
-    graph, source = init_kruskal()
-    mst = kruskal(graph, source)
-    print([v.name for v in mst.vertices])
-    print([(e.name, e.weight) for e in mst.edges])
+    
+
     
     
     
