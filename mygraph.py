@@ -1,5 +1,6 @@
 from heap import *
 import math
+import random
 
 class Graph(object):
     def __init__(self, dictionary=None):
@@ -9,6 +10,7 @@ class Graph(object):
         self.vertices = []
         self.edges = []
         self.time = 0
+        self.count = 0
         
     def add_vertex(self, vertex):
         if vertex not in self.adjacency_list:
@@ -24,14 +26,14 @@ class Graph(object):
                 self.adjacency_list[edge.source].append(edge.target)
                 self.adjacency_list[edge.target].append(edge.source)
                 self.edges.append(edge)
-                edge.directed = False
-                self.edges.append(Edge((edge.target, edge.source), weight=edge.weight))
+                edge.directed = True
+                self.edges.append(Edge((edge.target, edge.source), weight=edge.weight, directed=True))
                 
     def __str__(self):
         return '\nVertices :\n%s\n\nEdges :\n%s' %(str([v.name for v in self.vertices]), str([e.name for e in self.edges]))    
         
 class Vertex:
-    def __init__(self, name, mark=False, value=0, label=0, predesessor=None, distance=0):
+    def __init__(self, name, mark=False, value=0, label=0, predesessor=None, distance=0, status='new'):
         self.name = name
         self.color = 'white'
         self.value = value
@@ -41,6 +43,7 @@ class Vertex:
         self.pre = 0
         self.post = 0
         self.set = []
+        self.status = status
         
 class Edge:
     def __init__(self, edge, weight=1, directed=True):
@@ -143,8 +146,15 @@ def init_graph_dfs():
     
     return graph, source
   
-def dfs(graph, source):
+def init_dfs(graph):
     graph.time = 0
+    for v in graph.vertices:
+        v.color = 'white'
+        v.pre = 0
+        v.post = 0
+  
+def dfs(graph, source):
+    init_dfs(graph)
     for u in graph.vertices:
         if u.color == 'white':
             dfs_visit(graph, u)
@@ -276,8 +286,7 @@ def init_graph_topological_sort():
     
 def topological_sort(graph, source):
     dfs(graph, source)
-    pre_post_graph = {v:[v.pre, v.post, v.color] for v in graph.vertices}
-    return pre_post_graph
+    graph.vertices = sorted(graph.vertices, key=lambda x:x.post, reverse=True)
        
 def init_graph_bellman_ford():
     v1 = Vertex('v1')
@@ -467,45 +476,90 @@ def second_best_minimum_spanning_tree(graph):
         graph.edges.append(mst.edges[(e*2)+1])
     return sbmst
         
+def is_acyclic(graph):
+    for v in graph.vertices:
+        if v.status == 'new':
+            if not is_acyclic_dfs(v):
+                return False
+    return True
+
+def is_acyclic_dfs(vertex):
+    vertex.status = 'active'
+    for e in outgoing_edges(graph, vertex):
+        if e.target.status == 'active':
+            return False
+        elif e.target.status == 'new':
+            if is_acyclic_dfs(e.target) == False:
+                return False
+    vertex.status = 'finished'
+    return True
+     
+def reverse_graph(graph):
+    reversed_graph = Graph()
+    vertices = [v for v in graph.vertices]
+    edges = [Edge((e.target, e.source), weight=e.weight) for e in graph.edges]
+    init_graph(reversed_graph, vertices, edges)
+    return reversed_graph
+     
+def strong_components(graph):
+    components = Graph()
+    reversed_graph = reverse_graph(graph)
+    random_vertex = random.choice(reversed_graph.vertices)
+    topological_sort(reversed_graph, random_vertex)
+    #while graph.vertices != []:
+        #graph.count = graph.count + 1
+        ## v <- any vertex in a sink component of G <<Magic!>>
+        #for 
+       
 if __name__ == "__main__":
+
     
-    """
-    # BFS test case
+    ## BFS test case
     graph, source = init_graph_bfs()
     bfs(graph, source)
     #print({v.name:[v.value, v.color] for v in graph.vertices})
     
-    # DFS test case
+    ## DFS test case
     graph, source = init_graph_dfs()
     dfs(graph, source)
     #print({v.name:[v.pre, v.post, v.color] for v in graph.vertices})
     
-    # Dijkstra test case
+    ## Dijkstra test case
     graph, source = init_graph_dijkstra()
     dijkstra(graph, source)
     #print({v.name:[v.distance, v.predesessor.name] for v in graph.vertices if v.predesessor is not None})
     
-    # Topological sort test case
+    ## Topological sort test case
     graph, source = init_graph_topological_sort()
-    pre_post_graph = topological_sort(graph, source)
-    #print([v[0].name for v in sorted(pre_post_graph.items(), key=lambda x:x[1][1], reverse=True)])
+    topological_sort(graph, source)
+    #print([v.name for v in graph.vertices])
     
-    # Bellman-Ford test case
+    ## Bellman-Ford test case
     graph, source = init_graph_bellman_ford()
     bellman_ford(graph, source)
     #print({v.name:[v.distance, v.predesessor.name] for v in graph.vertices if v.predesessor is not None})
-    """
     
+    ## Kruskal test case
     graph = init_kruskal()
     mst = kruskal(graph)
-    print(int(sum([e.weight for e in mst.edges])/2))
-    print(mst)
+    #print([(e.name, e.weight) for e in mst.edges])
     
+    ## Second best minimum spanning tree
     graph = init_kruskal()
     sbmst = second_best_minimum_spanning_tree(graph)
-    print(int(sum([e.weight for e in sbmst.edges])/2))
-    print(sbmst)
-
+    #print('total weight of mst : ' + str(int(sum([e.weight for e in mst.edges])/2)) + '\n' + str([(e.name, e.weight) for e in mst.edges]) + '\ntotal weight of sbmst : ' + str(int(sum([e.weight for e in sbmst.edges])/2)) + '\n' + str([(e.name, e.weight) for e in sbmst.edges]))
+   
+    ## Acyclic graph test case
+    graph, source = init_graph_dfs()
+    #print(is_acyclic(graph))
+    graph, source = init_graph_topological_sort()
+    #print(is_acyclic(graph))
+    
+    ## Strong components case
+    graph, source = init_graph_topological_sort()
+    strong_components(graph)
+    
+   
     ## Not yet done
     graph, source = init_boruvka()
     #print(str(graph))
