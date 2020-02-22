@@ -22,18 +22,25 @@ class Graph(object):
             if edge.directed:
                 self.adjacency_list[edge.source].append(edge.target)
                 self.edges.append(edge)
+                edge.source.outgoing_edges.append(edge)
+                edge.target.incoming_edges.append(edge)
             if not edge.directed:
                 self.adjacency_list[edge.source].append(edge.target)
                 self.adjacency_list[edge.target].append(edge.source)
-                self.edges.append(edge)
                 edge.directed = True
-                self.edges.append(Edge((edge.target, edge.source), weight=edge.weight, directed=True))
+                second_edge = Edge((edge.target, edge.source), weight=edge.weight)
+                self.edges.append(edge)
+                self.edges.append(second_edge)
+                edge.source.outgoing_edges.append(edge)
+                edge.target.incoming_edges.append(edge)
+                edge.target.outgoing_edges.append(second_edge)
+                edge.source.incoming_edges.append(second_edge)
                 
     def __str__(self):
         return '\nVertices :\n%s\n\nEdges :\n%s' %(str([v.name for v in self.vertices]), str([e.name for e in self.edges]))    
         
 class Vertex:
-    def __init__(self, name, mark=False, value=0, label=0, predesessor=None, distance=0, status='new'):
+    def __init__(self, name, mark=False, value=0, label=0, predesessor=None, distance=0, status='new', unmarked=True):
         self.name = name
         self.color = 'white'
         self.value = value
@@ -44,6 +51,10 @@ class Vertex:
         self.post = 0
         self.set = []
         self.status = status
+        self.unmarked = True
+        self.outgoing_edges = []
+        self.incoming_edges = []
+        self.neighbors = []
         
 class Edge:
     def __init__(self, edge, weight=1, directed=True):
@@ -214,9 +225,6 @@ def relax(edge):
     edge.target.distance = edge.source.distance + edge.weight
     edge.target.predesessor = edge.source
     
-def outgoing_edges(graph, source):
-    return [e for e in graph.edges if e.source == source]
-
 def dijkstra(graph, source):
     """
     Runtime : O(E+VlogV)
@@ -226,7 +234,7 @@ def dijkstra(graph, source):
     pq.Push(source, source.distance)
     while not pq.IsEmpty():
         u, distance = pq.Extract()
-        for e in outgoing_edges(graph, u):
+        for e in u.outgoing_edges:
             if tense(e):
                 relax(e)
                 if pq.IsInHeap(e.target):
@@ -372,8 +380,8 @@ def init_boruvka():
     source = c1
     
     init_graph(graph, components, edges)
-    for c in components:
-        c.outgoing_edges = [outgoing_edges(graph, v) for v in c.vertices]
+    #for c in components:
+    #    c.outgoing_edges = [outgoing_edges(graph, v) for v in c.vertices]
     
     return graph, source
 
@@ -494,6 +502,57 @@ def is_acyclic_dfs(vertex):
     vertex.status = 'finished'
     return True
      
+def init_strong_components(graph):
+    a = Vertex('a')
+    b = Vertex('b')
+    c = Vertex('c')
+    d = Vertex('d')
+    e = Vertex('e')
+    f = Vertex('f')
+    g = Vertex('g')
+    h = Vertex('h')
+    i = Vertex('i')
+    j = Vertex('j')
+    k = Vertex('k')
+    l = Vertex('l')
+    m = Vertex('m')
+    n = Vertex('n')
+    o = Vertex('o')
+    p = Vertex('p')
+
+    e1 = Edge((a, b))
+    e2 = Edge((b, f))
+    e3 = Edge((f, g))
+    e4 = Edge((g, a))
+    e5 = Edge((e, f))
+    e6 = Edge((e, i))
+    e7 = Edge((i, n))
+    e8 = Edge((n, j))
+    e9 = Edge((j, m))
+    e10 = Edge((m, i))
+    e11 = Edge((f, l))
+    e12 = Edge((g, c))
+    e13 = Edge((g, k))
+    e14 = Edge((j, k))
+    e15 = Edge((n, o))
+    e16 = Edge((d, c))
+    e17 = Edge((c, h))
+    e18 = Edge((h, d))
+    e19 = Edge((k, h))
+    e20 = Edge((k, l))
+    e21 = Edge((l, o))
+    e22 = Edge((o, k))
+    e23 = Edge((l, p))
+    
+    graph = Graph()
+    vertices = [a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p]
+    edges = [e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23]
+    source = a
+    
+    init_graph(graph, vertices, edges)
+    
+    return graph, source
+     
 def reverse_graph(graph):
     reversed_graph = Graph()
     vertices = [v for v in graph.vertices]
@@ -501,19 +560,35 @@ def reverse_graph(graph):
     init_graph(reversed_graph, vertices, edges)
     return reversed_graph
      
+def sink_component(graph): 
+    random_vertex = random.choice(graph.vertices)
+    topological_sort(graph, random_vertex)
+    sink_vertex = graph.vertices[0]
+    return sink_vertex
+    
+def mark(vertex):
+    vertex.unmarked = False
+    
+def reach(vertex, reach_list):
+    if vertex.unmarked:
+        mark(vertex)
+        for e in vertex.outgoing_edges:
+            reach_list.append(e.target)
+            reach(e.target, reach_list)
+    return list(set(reach_list))
+     
 def strong_components(graph):
     components = Graph()
     reversed_graph = reverse_graph(graph)
-    random_vertex = random.choice(reversed_graph.vertices)
-    topological_sort(reversed_graph, random_vertex)
-    #while graph.vertices != []:
-        #graph.count = graph.count + 1
-        ## v <- any vertex in a sink component of G <<Magic!>>
-        #for 
-       
+    while graph.vertices != []:
+        graph.count = graph.count + 1
+        sink_vertex = sink_component(reversed_graph)
+        dfs(reverse_graph, sink_v)
+        #for v in reverse_graph:
+            #if v.color == 'black':
+            
 if __name__ == "__main__":
 
-    
     ## BFS test case
     graph, source = init_graph_bfs()
     bfs(graph, source)
@@ -557,7 +632,17 @@ if __name__ == "__main__":
     
     ## Strong components case
     graph, source = init_graph_topological_sort()
-    strong_components(graph)
+    #strong_components(graph)
+    
+   
+    
+    #reversed_graph = reverse_graph(graph)
+    #sink_vertex = sink_component(reversed_graph)
+    random_vertex = random.choice(graph.vertices)
+    print(random_vertex.name)
+    print([v.name for v in random_vertex.outgoing_edges])
+    print([v.name for v in reach(random_vertex, [random_vertex])])
+    
     
    
     ## Not yet done
