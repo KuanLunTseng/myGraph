@@ -55,6 +55,7 @@ class Vertex:
         self.outgoing_edges = []
         self.incoming_edges = []
         self.neighbors = []
+        self.root = None
         
 class Edge:
     def __init__(self, edge, weight=1, directed=True):
@@ -77,6 +78,7 @@ class Component(Vertex):
             v.label = self.label
        
 def init_graph(graph, vertices, edges):
+    reset_vertices(vertices)
     for v in vertices:
         graph.add_vertex(v)
     for e in edges:
@@ -344,7 +346,7 @@ def is_negative_cycle(graph, source):
             return True
     return False
 
-def init_boruvka():
+def init_graph_boruvka():
     v1 = Vertex('v1')
     v2 = Vertex('v2')
     v3 = Vertex('v3')
@@ -401,7 +403,7 @@ def boruvka(graph, source):
     return F
 """
 
-def init_kruskal():
+def init_graph_kruskal():
     v1 = Vertex('v1')
     v2 = Vertex('v2')
     v3 = Vertex('v3')
@@ -502,7 +504,7 @@ def is_acyclic_dfs(vertex):
     vertex.status = 'finished'
     return True
      
-def init_strong_components(graph):
+def init_graph_kosaraju_sharir():
     a = Vertex('a')
     b = Vertex('b')
     c = Vertex('c')
@@ -543,20 +545,26 @@ def init_strong_components(graph):
     e21 = Edge((l, o))
     e22 = Edge((o, k))
     e23 = Edge((l, p))
+    e24 = Edge((h, l))
     
     graph = Graph()
     vertices = [a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p]
-    edges = [e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23]
-    source = a
+    edges = [e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24]
     
     init_graph(graph, vertices, edges)
     
-    return graph, source
-     
+    return graph
+    
+def reset_vertices(vertices):
+    for v in vertices:
+        v.outgoing_edges = []
+        v.incoming_edges = []
+        v.adjacency_list = {}
+    
 def reverse_graph(graph):
     reversed_graph = Graph()
     vertices = [v for v in graph.vertices]
-    edges = [Edge((e.target, e.source), weight=e.weight) for e in graph.edges]
+    edges = [Edge((e.target, e.source)) for e in graph.edges]
     init_graph(reversed_graph, vertices, edges)
     return reversed_graph
      
@@ -577,18 +585,29 @@ def reach(vertex, reach_list):
             reach(e.target, reach_list)
     return list(set(reach_list))
      
-def strong_components(graph):
-    components = Graph()
-    reversed_graph = reverse_graph(graph)
-    while graph.vertices != []:
-        graph.count = graph.count + 1
-        sink_vertex = sink_component(reversed_graph)
-        dfs(reverse_graph, sink_v)
-        #for v in reverse_graph:
-            #if v.color == 'black':
+def label_one_dfs(vertex, root):
+    vertex.root = root
+    for e in vertex.outgoing_edges:
+        if e.target.root == None:
+            label_one_dfs(e.target, root)
+     
+def post_order_in_reversed_graph(graph):
+    graph = reverse_graph(graph)
+    random_vertex = random.choice(graph.vertices)
+    topological_sort(graph, random_vertex)
+    post_order = [v for v in graph.vertices]
+    graph = reverse_graph(graph)
+    return post_order
+     
+def kosaraju_sharir(graph):
+    post_order = post_order_in_reversed_graph(graph)
+    while post_order != []:
+        vertex = post_order.pop(0)
+        if vertex.root == None:
+            label_one_dfs(vertex, vertex)
             
 if __name__ == "__main__":
-
+    """
     ## BFS test case
     graph, source = init_graph_bfs()
     bfs(graph, source)
@@ -615,12 +634,12 @@ if __name__ == "__main__":
     #print({v.name:[v.distance, v.predesessor.name] for v in graph.vertices if v.predesessor is not None})
     
     ## Kruskal test case
-    graph = init_kruskal()
+    graph = init_graph_kruskal()
     mst = kruskal(graph)
     #print([(e.name, e.weight) for e in mst.edges])
     
     ## Second best minimum spanning tree
-    graph = init_kruskal()
+    graph = init_graph_kruskal()
     sbmst = second_best_minimum_spanning_tree(graph)
     #print('total weight of mst : ' + str(int(sum([e.weight for e in mst.edges])/2)) + '\n' + str([(e.name, e.weight) for e in mst.edges]) + '\ntotal weight of sbmst : ' + str(int(sum([e.weight for e in sbmst.edges])/2)) + '\n' + str([(e.name, e.weight) for e in sbmst.edges]))
    
@@ -629,24 +648,15 @@ if __name__ == "__main__":
     #print(is_acyclic(graph))
     graph, source = init_graph_topological_sort()
     #print(is_acyclic(graph))
+    """
     
     ## Strong components case
-    graph, source = init_graph_topological_sort()
-    #strong_components(graph)
+    graph = init_graph_kosaraju_sharir()
+    kosaraju_sharir(graph)
+    #print([(v.name, v.root.name) for v in sorted(graph.vertices, key=lambda x:x.root.name)])
     
-   
-    
-    #reversed_graph = reverse_graph(graph)
-    #sink_vertex = sink_component(reversed_graph)
-    random_vertex = random.choice(graph.vertices)
-    print(random_vertex.name)
-    print([v.name for v in random_vertex.outgoing_edges])
-    print([v.name for v in reach(random_vertex, [random_vertex])])
-    
-    
-   
     ## Not yet done
-    graph, source = init_boruvka()
+    #graph, source = init_graph_boruvka()
     #print(str(graph))
     #boruvka(graph, source)
     
