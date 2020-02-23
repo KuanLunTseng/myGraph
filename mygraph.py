@@ -65,18 +65,7 @@ class Edge:
         self.name = (self.source.name, self.target.name)
         self.weight = weight
         self.directed = directed
-        
-class Component(Vertex):
-    def __init__(self, vertices, label=0):
-        self.name = [v.name for v in vertices]
-        self.label = 0
-        self.size = len(vertices)
-        self.vertices = [vertices]
-        self.incoming_edges = []
-        self.outgoing_edges = []
-        for v in vertices:
-            v.label = self.label
-       
+              
 def init_graph(graph, vertices, edges):
     reset_vertices(vertices)
     for v in vertices:
@@ -346,63 +335,6 @@ def is_negative_cycle(graph, source):
             return True
     return False
 
-def init_graph_boruvka():
-    v1 = Vertex('v1')
-    v2 = Vertex('v2')
-    v3 = Vertex('v3')
-    v4 = Vertex('v4')
-    v5 = Vertex('v5')
-    v6 = Vertex('v6')
-    v7 = Vertex('v7')
-
-    c1 = Component([v1], label=0)
-    c2 = Component([v2], label=1)
-    c3 = Component([v3], label=2)
-    c4 = Component([v4], label=3)
-    c5 = Component([v5], label=4)
-    c6 = Component([v6], label=5)
-    c7 = Component([v7], label=6)
-    
-    e1 = Edge((c1, c2), directed=False, weight=26)
-    e2 = Edge((c1, c3), directed=False, weight=14)
-    e3 = Edge((c1, c4), directed=False, weight=4)
-    e4 = Edge((c2, c5), directed=False, weight=16)
-    e5 = Edge((c2, c3), directed=False, weight=30)
-    e6 = Edge((c3, c4), directed=False, weight=12)
-    e7 = Edge((c3, c5), directed=False, weight=3)
-    e8 = Edge((c3, c6), directed=False, weight=2)
-    e9 = Edge((c4, c6), directed=False, weight=18)
-    e10 = Edge((c5, c6), directed=False, weight=10)
-    e11 = Edge((c5, c7), directed=False, weight=5)
-    e12 = Edge((c6, c7), directed=False, weight=8)
-    
-    graph = Graph()
-    components = [c1, c2, c3, c4, c5, c6, c7]
-    edges = [e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12]
-    source = c1
-    
-    init_graph(graph, components, edges)
-    #for c in components:
-    #    c.outgoing_edges = [outgoing_edges(graph, v) for v in c.vertices]
-    
-    return graph, source
-
-"""    
-def count_and_label(F):
-    count = 0
-    
-def add_all_safe_edges(edges, F, count):
-        for i in range(count):
-               
-def boruvka(graph, source):
-    F = graph.vertices, []
-    count = count_and_label(F)
-    while count > 1:
-        add_all_safe_edges(graph.edges, F, count)
-        count = count_and_label(F)
-    return F
-"""
-
 def init_graph_kruskal():
     v1 = Vertex('v1')
     v2 = Vertex('v2')
@@ -495,7 +427,7 @@ def is_acyclic(graph):
 
 def is_acyclic_dfs(vertex):
     vertex.status = 'active'
-    for e in outgoing_edges(graph, vertex):
+    for e in vertex.outgoing_edges:
         if e.target.status == 'active':
             return False
         elif e.target.status == 'new':
@@ -600,6 +532,10 @@ def post_order_in_reversed_graph(graph):
     return post_order
      
 def kosaraju_sharir(graph):
+    """
+    Strong Connected Components
+    Runtime : O(V+E)
+    """
     post_order = post_order_in_reversed_graph(graph)
     while post_order != []:
         vertex = post_order.pop(0)
@@ -607,76 +543,50 @@ def kosaraju_sharir(graph):
             label_one_dfs(vertex, vertex)
             
 if __name__ == "__main__":
-    """
+    
     ## BFS test case
     graph, source = init_graph_bfs()
     bfs(graph, source)
-    #print({v.name:[v.value, v.color] for v in graph.vertices})
+    print({v.name:[v.value, v.color] for v in graph.vertices})
     
     ## DFS test case
     graph, source = init_graph_dfs()
     dfs(graph, source)
-    #print({v.name:[v.pre, v.post, v.color] for v in graph.vertices})
+    print({v.name:[v.pre, v.post, v.color] for v in graph.vertices})
     
     ## Dijkstra test case
     graph, source = init_graph_dijkstra()
     dijkstra(graph, source)
-    #print({v.name:[v.distance, v.predesessor.name] for v in graph.vertices if v.predesessor is not None})
+    print({v.name:[v.distance, v.predesessor.name] for v in graph.vertices if v.predesessor is not None})
     
     ## Topological sort test case
     graph, source = init_graph_topological_sort()
     topological_sort(graph, source)
-    #print([v.name for v in graph.vertices])
+    print([v.name for v in graph.vertices])
     
     ## Bellman-Ford test case
     graph, source = init_graph_bellman_ford()
     bellman_ford(graph, source)
-    #print({v.name:[v.distance, v.predesessor.name] for v in graph.vertices if v.predesessor is not None})
+    print({v.name:[v.distance, v.predesessor.name] for v in graph.vertices if v.predesessor is not None})
     
     ## Kruskal test case
     graph = init_graph_kruskal()
     mst = kruskal(graph)
-    #print([(e.name, e.weight) for e in mst.edges])
+    print([(e.name, e.weight) for e in mst.edges])
     
     ## Second best minimum spanning tree
     graph = init_graph_kruskal()
     sbmst = second_best_minimum_spanning_tree(graph)
-    #print('total weight of mst : ' + str(int(sum([e.weight for e in mst.edges])/2)) + '\n' + str([(e.name, e.weight) for e in mst.edges]) + '\ntotal weight of sbmst : ' + str(int(sum([e.weight for e in sbmst.edges])/2)) + '\n' + str([(e.name, e.weight) for e in sbmst.edges]))
+    print('total weight of mst : ' + str(int(sum([e.weight for e in mst.edges])/2)) + '\n' + str([(e.name, e.weight) for e in mst.edges]) + '\ntotal weight of sbmst : ' + str(int(sum([e.weight for e in sbmst.edges])/2)) + '\n' + str([(e.name, e.weight) for e in sbmst.edges]))
    
     ## Acyclic graph test case
     graph, source = init_graph_dfs()
-    #print(is_acyclic(graph))
+    print(is_acyclic(graph))
     graph, source = init_graph_topological_sort()
-    #print(is_acyclic(graph))
-    """
+    print(is_acyclic(graph))
     
     ## Strong components case
     graph = init_graph_kosaraju_sharir()
     kosaraju_sharir(graph)
-    #print([(v.name, v.root.name) for v in sorted(graph.vertices, key=lambda x:x.root.name)])
-    
-    ## Not yet done
-    #graph, source = init_graph_boruvka()
-    #print(str(graph))
-    #boruvka(graph, source)
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    print([(v.name, v.root.name) for v in sorted(graph.vertices, key=lambda x:x.root.name)])
     
