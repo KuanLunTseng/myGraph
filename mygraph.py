@@ -25,10 +25,10 @@ class Graph(object):
                 edge.source.outgoing_edges.append(edge)
                 edge.target.incoming_edges.append(edge)
             if not edge.directed:
-                self.adjacency_list[edge.source].append(edge.target)
-                self.adjacency_list[edge.target].append(edge.source)
                 edge.directed = True
                 second_edge = Edge((edge.target, edge.source), weight=edge.weight)
+                self.adjacency_list[edge.source].append(edge.target)
+                self.adjacency_list[edge.target].append(edge.source)
                 self.edges.append(edge)
                 self.edges.append(second_edge)
                 edge.source.outgoing_edges.append(edge)
@@ -65,7 +65,14 @@ class Edge:
         self.name = (self.source.name, self.target.name)
         self.weight = weight
         self.directed = directed
-              
+       
+def reset_vertices(vertices):
+    for v in vertices:
+        v.outgoing_edges = []
+        v.incoming_edges = []
+        v.adjacency_list = {}
+        v.color = 'white'
+       
 def init_graph(graph, vertices, edges):
     reset_vertices(vertices)
     for v in vertices:
@@ -103,6 +110,7 @@ def init_graph_bfs():
     return graph, source
     
 def bfs(graph, source):
+    source.value = 0
     queue = [source]
     while queue:
         u = queue.pop(0)
@@ -112,6 +120,8 @@ def bfs(graph, source):
                 v.value = u.value + 1
                 v.predesessor = u
                 queue.append(v)
+            if v.color == 'black':
+                v.predesessor = u
         u.color = 'black'
   
 def init_graph_dfs():
@@ -487,12 +497,6 @@ def init_graph_kosaraju_sharir():
     
     return graph
     
-def reset_vertices(vertices):
-    for v in vertices:
-        v.outgoing_edges = []
-        v.incoming_edges = []
-        v.adjacency_list = {}
-    
 def reverse_graph(graph):
     reversed_graph = Graph()
     vertices = [v for v in graph.vertices]
@@ -530,7 +534,7 @@ def post_order_in_reversed_graph(graph):
     post_order = [v for v in graph.vertices]
     graph = reverse_graph(graph)
     return post_order
-     
+         
 def kosaraju_sharir(graph):
     """
     Strong Connected Components
@@ -541,52 +545,101 @@ def kosaraju_sharir(graph):
         vertex = post_order.pop(0)
         if vertex.root == None:
             label_one_dfs(vertex, vertex)
-            
-if __name__ == "__main__":
+   
+def init_graph_divide_by_three():
+    s = Vertex('s')
+    w = Vertex('w')
+    t = Vertex('t')
+    x = Vertex('x')
+    y = Vertex('y')
+    z = Vertex('z')
     
+    e1 = Edge((s, w))
+    e2 = Edge((w, t))
+    e3 = Edge((w, y))
+    e4 = Edge((z, t))
+    e5 = Edge((y, z))
+    e6 = Edge((y, x))
+    e7 = Edge((x, s))
+    
+    graph = Graph()
+    vertices = [s, w, t, x, y, z]
+    edges = [e1, e2, e3, e4, e5, e6, e7]
+    
+    init_graph(graph, vertices, edges)
+    source = s
+    target = t
+    
+    return graph, source, target
+   
+def check(graph, source, target):
+    reset_vertices(graph.vertices)
+    bfs(graph, source)
+    return target.value % 3 == 0
+   
+def divide_by_three(graph, source, target):
+    if check(graph, source, target):
+        return True
+    else:
+        source.unmarked = False
+        if source.predesessor != None:
+            vertex = source.predesessor
+            if vertex.unmarked:
+                return divide_by_three(graph, vertex, target)
+    return False
+       
+if __name__ == "__main__":
+    '''
     ## BFS test case
     graph, source = init_graph_bfs()
     bfs(graph, source)
-    print({v.name:[v.value, v.color] for v in graph.vertices})
+    #print({v.name:[v.value, v.color] for v in graph.vertices})
+    #print([(v.name, v.predesessor.name) for v in graph.vertices if v.predesessor != None])
     
     ## DFS test case
     graph, source = init_graph_dfs()
     dfs(graph, source)
-    print({v.name:[v.pre, v.post, v.color] for v in graph.vertices})
+    #print({v.name:[v.pre, v.post, v.color] for v in graph.vertices})
     
     ## Dijkstra test case
     graph, source = init_graph_dijkstra()
     dijkstra(graph, source)
-    print({v.name:[v.distance, v.predesessor.name] for v in graph.vertices if v.predesessor is not None})
+    #print({v.name:[v.distance, v.predesessor.name] for v in graph.vertices if v.predesessor is not None})
     
     ## Topological sort test case
     graph, source = init_graph_topological_sort()
     topological_sort(graph, source)
-    print([v.name for v in graph.vertices])
+    #print([v.name for v in graph.vertices])
     
     ## Bellman-Ford test case
     graph, source = init_graph_bellman_ford()
     bellman_ford(graph, source)
-    print({v.name:[v.distance, v.predesessor.name] for v in graph.vertices if v.predesessor is not None})
+    #print({v.name:[v.distance, v.predesessor.name] for v in graph.vertices if v.predesessor is not None})
     
     ## Kruskal test case
     graph = init_graph_kruskal()
     mst = kruskal(graph)
-    print([(e.name, e.weight) for e in mst.edges])
+    #print([(e.name, e.weight) for e in mst.edges])
     
     ## Second best minimum spanning tree
     graph = init_graph_kruskal()
     sbmst = second_best_minimum_spanning_tree(graph)
-    print('total weight of mst : ' + str(int(sum([e.weight for e in mst.edges])/2)) + '\n' + str([(e.name, e.weight) for e in mst.edges]) + '\ntotal weight of sbmst : ' + str(int(sum([e.weight for e in sbmst.edges])/2)) + '\n' + str([(e.name, e.weight) for e in sbmst.edges]))
+    #print('total weight of mst : ' + str(int(sum([e.weight for e in mst.edges])/2)) + '\n' + str([(e.name, e.weight) for e in mst.edges]) + '\ntotal weight of sbmst : ' + str(int(sum([e.weight for e in sbmst.edges])/2)) + '\n' + str([(e.name, e.weight) for e in sbmst.edges]))
    
     ## Acyclic graph test case
     graph, source = init_graph_dfs()
-    print(is_acyclic(graph))
+    #print(is_acyclic(graph))
     graph, source = init_graph_topological_sort()
-    print(is_acyclic(graph))
+    #print(is_acyclic(graph))
     
-    ## Strong components case
+    ## Strong components test case
     graph = init_graph_kosaraju_sharir()
     kosaraju_sharir(graph)
-    print([(v.name, v.root.name) for v in sorted(graph.vertices, key=lambda x:x.root.name)])
+    #print([(v.name, v.root.name) for v in sorted(graph.vertices, key=lambda x:x.root.name)])
+
+    ## Divide by three test case(not sure it is right or not
+    graph, source, target = init_graph_divide_by_three()
+    #print(divide_by_three(graph, source, target))
+    '''
     
+   
