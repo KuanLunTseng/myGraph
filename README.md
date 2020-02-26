@@ -1,3 +1,2 @@
 # myGraph
-Implementation of graph from the book Algorithms by Jeff Erickson
-link : algorithms.wtf
+Implementation of graph from the book [Algorithms](algorithms.wtf) by Jeff Erickson
