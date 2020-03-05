@@ -336,3 +336,109 @@ def init_graph_number_distinct_dfs_tree():
     init_graph(graph, vertices, edges)
     
     return graph, root, dest
+    
+def init_graph_number_distinct_dfs_tree_easy():
+    x1 = Vertex('x1')
+    x2 = Vertex('x2')
+    x3 = Vertex('x3')
+    x4 = Vertex('x4')
+    
+    t1 = Vertex('t1')
+    t2 = Vertex('t2')
+    t3 = Vertex('t3')
+   
+    b1 = Vertex('b1')
+    b2 = Vertex('b2')
+    b3 = Vertex('b3')
+    
+    e1 = Edge((x1, t1))
+    e2 = Edge((x1, b1))
+    e3 = Edge((t1, x2))
+    e4 = Edge((b1, x2))
+    
+    e5 = Edge((x2, t2))
+    e6 = Edge((x2, b2))
+    e7 = Edge((t2, x3))
+    e8 = Edge((b2, x3))
+    
+    e9 = Edge((x3, t3))
+    e10 = Edge((x3, b3))
+    e11 = Edge((t3, x4))
+    e12 = Edge((b3, x4))
+      
+    
+    graph = Graph()
+    vertices = [x1, x2, x3, t1, t2, t3, b1, b2, b3]
+    edges = [e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12]
+    root = x1
+    dest = x4
+    init_graph(graph, vertices, edges)
+    
+    return graph, root, dest
+    
+def init_graph_number_distinct_dfs_tree_basic():
+    x1 = Vertex('x1')
+    x2 = Vertex('x2')
+    
+    t1 = Vertex('t1')
+   
+    b1 = Vertex('b1')
+    
+    e1 = Edge((x1, t1))
+    e2 = Edge((x1, b1))
+    e3 = Edge((t1, x2))
+    e4 = Edge((b1, x2))
+    
+    graph = Graph()
+    vertices = [x1, x2, t1, b1]
+    edges = [e1, e2, e3, e4]
+    root = x1
+    dest = x2
+    init_graph(graph, vertices, edges)
+    
+    return graph, root, dest
+    
+def init_graph_dfs_shortest_length():
+
+    s = Vertex('s')
+    b = Vertex('b')
+    c = Vertex('c')
+    t = Vertex('t')
+    
+    e1 = Edge((s, b), weight=4)
+    e2 = Edge((s, c), weight=17)
+    e3 = Edge((b, t), weight=2)
+    e4 = Edge((c, t), weight=1)
+    
+    
+    graph = Graph()
+    vertices = [s, b, c, t]
+    edges = [e1, e2, e3, e4]
+    source = s
+    target = t
+    
+    init_graph(graph, vertices, edges)
+    
+    return graph, source, target
+    
+def init_graph_johnson():
+    w = Vertex('w')
+    x = Vertex('x')
+    y = Vertex('y')
+    z = Vertex('z')
+    
+    e1 = Edge((w, z), weight=2)
+    e2 = Edge((z, x), weight=-7)
+    e3 = Edge((x, w), weight=6)
+    e4 = Edge((x, y), weight=3)
+    e5 = Edge((y, z), weight=5)
+    e6 = Edge((z, y), weight=-3)
+    e7 = Edge((y, w), weight=4)
+    
+    graph = Graph()
+    vertices = [w, x, y, z]
+    edges = [e1, e2, e3, e4, e5, e6, e7]
+    
+    init_graph(graph, vertices, edges)
+    
+    return graph

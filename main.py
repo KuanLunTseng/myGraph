@@ -6,15 +6,21 @@ from problem_set import *
 def dory_dfs(vertex):
     global call
     call+=1
+    #print(vertex.name)
     for e in vertex.outgoing_edges:
         dory_dfs(e.target)
 
 if __name__ == "__main__":
     
-    graph, root, dest = init_graph_number_distinct_dfs_tree()
+    graph = init_graph_johnson()
+    dict = johnson(graph)
+    print(dict)
+    print([(e.source.name, e.target.name, e.weight) for e in graph.edges])
+    
+    graph, root, dest = init_graph_number_distinct_dfs_tree_basic()
     call = 0
     dory_dfs(root)
-    print(call)
+    #print(call)
     
     ## BFS test case
     graph, source = init_graph_bfs()
@@ -36,6 +42,7 @@ if __name__ == "__main__":
     graph, source = init_graph_topological_sort()
     topological_sort(graph, source)
     #print([v.name for v in graph.vertices])
+    
     
     ## Bellman-Ford test case
     graph, source = init_graph_bellman_ford()
@@ -71,5 +78,9 @@ if __name__ == "__main__":
     graph, root, dest = init_graph_number_distinct_dfs_tree()
     num = number_diff_dfs_tree(graph, root, dest)
     #print(num)
+    
+    ## DFS shortest length test
+    graph, source, target = init_graph_dfs_shortest_length()
+    #print(dfs_shortest_length(graph, source, target, 0))
     
    

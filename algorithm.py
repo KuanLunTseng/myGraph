@@ -233,6 +233,7 @@ def divide_by_three(graph, source, target):
                 return divide_by_three(graph, vertex, target)
     return False
 
+## Constructing...
 '''
 def init_modified_bfs(graph):
  
@@ -249,6 +250,7 @@ def num_shortest_path(graph, source, target):
     return count
 '''
 
+## Constructing...
 def k_walk():
     if k == 0:
         return False
@@ -269,6 +271,59 @@ def number_diff_dfs_tree(graph, root, dest):
                 v.count += u.count
     return dest.count
 
+## Constructing...
+def johnson(graph):
+    
+    # Add an artificial source
+    s = Vertex('s')
+    graph.add_vertex(s)
+    
+    #for v in graph.vertices:
+    #    graph.add_edge(Edge((s, v), weight=0))
+    for e in [Edge((s, v), weight=0) for v in graph.vertices]:
+        graph.add_edge(e)
+        
+    # Compute vertex prices
+    dist = {}
+    bellman_ford(graph, s)
+    for v in graph.vertices:
+        dist[s, v] = v.distance
+        print(dist)
+    #if is_negative_cycle:
+    #    return
+    print(dist)
+    # Reweight the edges
+    for e in graph.edges:
+        u = e.source
+        v = e.target
+        e.weight = dist[s, u] + e.weight - dist[s, v]
+    
+    # Compute reweighted shortest path distances
+    dist_dijkstra = {}
+    for u in graph.vertices:
+        dijkstra(graph, u)
+        for v in graph.vertices: 
+            dist_dijkstra[u, v] = v.distance
+        
+    # Compute original shortest-path distances
+    for u in graph.vertices:
+        for v in graph.vertices:
+            dist[u, v] = dist_dijkstra[u, v] - dist[s, u] + dist[s, v]
+    return dist
+        
+## Constructing...
+def floyd_warshall(graph):
+    for u in graph.vertices:
+        for v in graph.vertices:
+            dist[u][v] = 0
+            
+def dfs_shortest_length(graph, source, target, weight):
+    """
+    Works only in a graph in topological order
+    """
+    if source == target:
+        return weight
+    return min([dfs_shortest_length(graph, e.target, target, weight + e.weight) for e in source.outgoing_edges])
 
 
 
