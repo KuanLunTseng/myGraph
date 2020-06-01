@@ -2,7 +2,18 @@ from graph_class import *
 from heap import *
 from problem_set import *
 import math
+from pysmt.shortcuts import *
+from pysmt.typing import *
 import random
+
+"""
+Quick review of adding elements to list in Python
+
+append(): append the object to the end of the list.
+insert(): inserts the object before the given index.
+extend(): extends the list by appending elements from the iterable.
+List Concatenation: We can use '+' operator to concatenate multiple lists and create a new list.
+"""
 
 def bfs(graph, source):
     source.value = 0
@@ -42,9 +53,7 @@ def dfs_visit(graph, u):
     u.color = 'black'
     graph.time = graph.time + 1
     u.post = graph.time
-
-
-
+    
 def init_sssp(graph, source):
     source.distance = 0
     source.pred = None
@@ -62,6 +71,8 @@ def relax(edge):
 def dijkstra(graph, source):
     """
     Runtime : O(E+VlogV)
+    This version allows to find the shortest path in a graph, 
+    even there are some negative edges, but no negative cylce exists.
     """
     init_sssp(graph, source)
     pq = Heap(min = True)
@@ -119,7 +130,8 @@ def kruskal(graph):
     edges = []
     for v in graph.vertices:
         make_set(v)
-    for e in range(int(len(graph.edges)/2)):    # undirected edges are bi-directional 
+    # undirected edges are bi-directional, so there are twice amount of edges
+    for e in range(int(len(graph.edges)/2)):    
         edge = graph.edges[e*2]
         u, v = edge.source, edge.target
         if find(u) != find(v):
@@ -237,7 +249,6 @@ def divide_by_three(graph, source, target):
 '''
 def init_modified_bfs(graph):
  
- 
 def modified_bfs(graph, source, target, distance):
     init_modified_bfs(graph)
        
@@ -288,10 +299,10 @@ def johnson(graph):
     bellman_ford(graph, s)
     for v in graph.vertices:
         dist[s, v] = v.distance
-        print(dist)
+        #print(dist)
     #if is_negative_cycle:
     #    return
-    print(dist)
+    #print(dist)
     # Reweight the edges
     for e in graph.edges:
         u = e.source
@@ -319,12 +330,72 @@ def floyd_warshall(graph):
             
 def dfs_shortest_length(graph, source, target, weight):
     """
-    Works only in a graph in topological order
+    It works only in a graph in topological order. This algorithm exhausts all 
+    possible ways from source to target to find the shortest path, so the runtime
+    is O(V*V)
     """
     if source == target:
         return weight
     return min([dfs_shortest_length(graph, e.target, target, weight + e.weight) for e in source.outgoing_edges])
 
-
-
+def copy_k_vertices(variables, k):
+    return [[Vertex(v.name+str(i)) for i in range(k)] for v in variables]
+    
+def clique_to_sat(graph, k):
+    """
+    Clique problem:
+    
+    For a given graph G = (V, E) and an integer k, the k-Clique problem is to find
+    whether G contains a clique of size >= k
+    
+    Return a list of CNF clauses that encodes a clique problem to a SAT problem
+    """
+    
+    # 1st
+    flatten = lambda list : [item for sublist in list for item in sublist]
+    flat_vertices = flatten(copy_k_vertices(graph.vertices, k))
+    variables = [Symbol(v.name) for v in flat_vertices]
+    
+    # 2nd
+    vgroup_vertices = copy_k_vertices(graph.vertices, k)
+    vgroup_variables = [[Symbol(v.name) for v in list] for list in vgroup_vertices]
+    
+    # 3rd
+    non_edge_vertices = []
+    '''
+    for i in graph.vertices:
+        for j in graph.vertices:
+            if i != j:
+                if i not in j.neighbors:
+                    non_edge_vertices.append((i.name, j.name))
+    '''
+    non_edge_vertices = [((i, j)) for i in graph.vertices for j in graph.vertices if i != j and i not in j.neighbors]
+    negroup_variables = list(set([(Symbol(u.name+str(i)), Symbol(v.name+str(j))) for j in range(k) for i in range(k) for (u, v) in non_edge_vertices if i != j]))
+    
+    
+    # The 1st constraint
+    first_formula = Or([v for v in variables])
+    
+    # The 2nd constraint 
+    sencond_formula = And([Or(Not(i), Not(j)) for v in vgroup_variables for i in v for j in v if i != j])
+    #print(sencond_formula)
+    
+    # The 3rd constraint
+    third_formula = And([Or(Not(u), Not(v)) for (u, v) in negroup_variables])
+    #print(third_formula)
+    
+    formula = And(first_formula, sencond_formula, third_formula)
+    
+    print(formula)
+    print(get_model(formula))
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 

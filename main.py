@@ -14,8 +14,8 @@ if __name__ == "__main__":
     
     graph = init_graph_johnson()
     dict = johnson(graph)
-    print(dict)
-    print([(e.source.name, e.target.name, e.weight) for e in graph.edges])
+    #print(dict)
+    #print([(e.source.name, e.target.name, e.weight) for e in graph.edges])
     
     graph, root, dest = init_graph_number_distinct_dfs_tree_basic()
     call = 0
@@ -74,7 +74,7 @@ if __name__ == "__main__":
     graph, source, target = init_graph_divide_by_three()
     #print(divide_by_three(graph, source, target))
     
-    ## Number of distinct dfs tree test case
+    ## Number of distinct dfs tree case
     graph, root, dest = init_graph_number_distinct_dfs_tree()
     num = number_diff_dfs_tree(graph, root, dest)
     #print(num)
@@ -83,4 +83,8 @@ if __name__ == "__main__":
     graph, source, target = init_graph_dfs_shortest_length()
     #print(dfs_shortest_length(graph, source, target, 0))
     
+    ## k-clique reduction test case
+    graph = init_five_clique()
+    k = 1
+    clique_to_sat(graph, k)
    

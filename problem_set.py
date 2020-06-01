@@ -1,6 +1,9 @@
 from algorithm import *
+from copy import deepcopy as cpy 
 from graph_class import *
 from heap import *
+from pysmt import *
+
 
 def init_graph_bfs():
     r = Vertex('r')
@@ -438,6 +441,33 @@ def init_graph_johnson():
     graph = Graph()
     vertices = [w, x, y, z]
     edges = [e1, e2, e3, e4, e5, e6, e7]
+    
+    init_graph(graph, vertices, edges)
+    
+    return graph
+    
+def init_five_clique():
+    a = Vertex('a')
+    b = Vertex('b')
+    c = Vertex('c')
+    d = Vertex('d')
+    e = Vertex('e')
+    
+    e1 = Edge((a, b), directed=False)
+    e2 = Edge((b, d), directed=False)
+    e3 = Edge((d, e), directed=False)
+    #e4 = Edge((e, c), directed=False)
+    e5 = Edge((c, a), directed=False)
+    e6 = Edge((a, d), directed=False)
+    #e7 = Edge((a, e), directed=False)
+    #e8 = Edge((b, e), directed=False)
+    #e9 = Edge((b, c), directed=False)
+    #e10 = Edge((d, c), directed=False)
+    
+    graph = Graph()
+    vertices = [a, b, c, d, e]
+    #edges = [e1, e2, e3, e4, e5, e6, e7, e8, e9, e10]
+    edges = [e1, e2, e3, e5, e6]
     
     init_graph(graph, vertices, edges)
     

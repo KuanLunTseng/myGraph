@@ -8,6 +8,7 @@ class Graph(object):
         self.time = 0
         self.count = 0
         
+        
     def add_vertex(self, vertex):
         if vertex not in self.adjacency_list:
             self.adjacency_list[vertex] = []
@@ -31,12 +32,14 @@ class Graph(object):
                 edge.target.incoming_edges.append(edge)
                 edge.target.outgoing_edges.append(second_edge)
                 edge.source.incoming_edges.append(second_edge)
+                edge.target.neighbors.append(edge.source)
+                edge.source.neighbors.append(edge.target)
                 
     def __str__(self):
         return '\nVertices :\n%s\n\nEdges :\n%s' %(str([v.name for v in self.vertices]), str([e.name for e in self.edges]))    
 
 class Vertex:
-    def __init__(self, name, mark=False, value=0, label=0, predesessor=None, distance=0, status='new', unmarked=True):
+    def __init__(self, name, mark=False, value=0, label=0, predesessor=None, distance=0, status='new', unmarked=True, negation=False):
         self.name = name
         self.color = 'white'
         self.value = value
@@ -53,6 +56,8 @@ class Vertex:
         self.neighbors = []
         self.root = None
         self.count = 0
+        self.negation = negation
+        self.boolean = 0
 
 class Edge:
     def __init__(self, edge, weight=1, directed=True):
@@ -76,3 +81,4 @@ def init_graph(graph, vertices, edges):
         graph.add_vertex(v)
     for e in edges:
         graph.add_edge(e)
+        
