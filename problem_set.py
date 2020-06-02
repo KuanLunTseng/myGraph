@@ -447,27 +447,21 @@ def init_graph_johnson():
     return graph
     
 def init_five_clique():
-    a = Vertex('a')
-    b = Vertex('b')
-    c = Vertex('c')
-    d = Vertex('d')
-    e = Vertex('e')
+  
+    name = 'abcde'
+    v = [Vertex(n) for n in name]
     
-    e1 = Edge((a, b), directed=False)
-    e2 = Edge((b, d), directed=False)
-    e3 = Edge((d, e), directed=False)
-    #e4 = Edge((e, c), directed=False)
-    e5 = Edge((c, a), directed=False)
-    e6 = Edge((a, d), directed=False)
-    #e7 = Edge((a, e), directed=False)
-    #e8 = Edge((b, e), directed=False)
-    #e9 = Edge((b, c), directed=False)
-    #e10 = Edge((d, c), directed=False)
+
+    
+    e1 = Edge((v[0], v[1]), directed=False)
+    e2 = Edge((v[1], v[2]), directed=False)
+    e3 = Edge((v[0], v[2]), directed=False)
+    e4 = Edge((v[0], v[3]), directed=False)
+    e5 = Edge((v[1], v[3]), directed=False)
     
     graph = Graph()
-    vertices = [a, b, c, d, e]
-    #edges = [e1, e2, e3, e4, e5, e6, e7, e8, e9, e10]
-    edges = [e1, e2, e3, e5, e6]
+    vertices = v
+    edges = [e1, e2, e3, e5]
     
     init_graph(graph, vertices, edges)
     

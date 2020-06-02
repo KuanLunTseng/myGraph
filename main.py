@@ -43,7 +43,6 @@ if __name__ == "__main__":
     topological_sort(graph, source)
     #print([v.name for v in graph.vertices])
     
-    
     ## Bellman-Ford test case
     graph, source = init_graph_bellman_ford()
     bellman_ford(graph, source)
