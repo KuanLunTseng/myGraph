@@ -85,6 +85,6 @@ if __name__ == "__main__":
     
     ## k-clique reduction test case
     graph = init_five_clique()
-    k = 1
+    k = 3
     clique_to_sat(graph, k)
    
