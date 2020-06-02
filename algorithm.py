@@ -350,80 +350,28 @@ def clique_to_sat(graph, k):
     
     Return a list of CNF clauses that encodes a clique problem to a SAT problem
     """
-    '''
-    # First attempt
-    # 1st
-    flatten = lambda list : [item for sublist in list for item in sublist]
-    flat_vertices = flatten(copy_k_vertices(graph.vertices, k))
-    variables = [Symbol(v.name) for v in flat_vertices]
-    
-    # 2nd
-    vgroup_vertices = copy_k_vertices(graph.vertices, k)
-    vgroup_variables = [[Symbol(v.name) for v in list] for list in vgroup_vertices]
-    
-    # 3rd
-    non_edge_vertices = []
-    
-    for i in graph.vertices:
-        for j in graph.vertices:
-            if i != j:
-                if i not in j.neighbors:
-                    non_edge_vertices.append((i.name, j.name))
-   
-    non_edge_vertices = [((i, j)) for i in graph.vertices for j in graph.vertices if i != j and i not in j.neighbors]
-    negroup_variables = list(set([(Symbol(u.name+str(i)), Symbol(v.name+str(j))) for j in range(k) for i in range(k) for (u, v) in non_edge_vertices if i != j]))
-    
-    
-    # The 1st constraint
-    first_formula = Or([v for v in variables])
-    
-    # The 2nd constraint 
-    sencond_formula = And([Or(Not(i), Not(j)) for v in vgroup_variables for i in v for j in v if i != j])
-    #print(sencond_formula)
-    
-    # The 3rd constraint
-    third_formula = And([Or(Not(u), Not(v)) for (u, v) in negroup_variables])
-    #print(third_formula)
-    
-    formula = And(first_formula, sencond_formula, third_formula)
-    
-    print(formula)
-    print(get_model(formula))
-    '''
-    
-    print([v.name for v in graph.vertices])
     
     flatten = lambda list : [item for sublist in list for item in sublist]
     flat_vertices = flatten(copy_k_vertices(graph.vertices, k))
     variables = [Symbol(v.name, INT) for v in flat_vertices]
-    
     first_formula = And([And(GE(v, Int(0)), LE(v, Int(1))) for v in variables])
-    print(first_formula)
-    print()
+    
     # 1st Constraint
     temp_list = ([[v for v in variables if str(v)[1] == str(r)] for r in range(k)])
     sum_first_constraint = [Equals(Plus(l), Int(1)) for l in temp_list]
     first_constraint = And(sum_first_constraint)
-    print(first_constraint)
     
     # 2nd Constraint
     temp_list = [[v for v in variables if i.name == str(v)[0]] for i in graph.vertices]
     sum_second_constraint = And([LE(Plus(l), Int(1)) for l in temp_list])
-    #print(sum_second_constraint)
     
     # 3rd Constraint
     non_edge_vertices = []
- 
     non_edge_vertices = [((i, j)) for i in graph.vertices for j in graph.vertices if i != j and i not in j.neighbors]
     non_edge_group_variables = list(set([(Symbol(u.name+str(i), INT), Symbol(v.name+str(j), INT)) for j in range(k) for i in range(k) for (u, v) in non_edge_vertices if i != j]))
-    
-    
-    third_constraint = And([Or(Not(Equals(u, Int(1))), Not(Equals(v, Int(1))))for (u, v) in non_edge_group_variables]) #, GE(u, Int(0)), LE(u, Int(1)), GE(v, Int(0)), LE(v, Int(1))
-    #print(third_constraint)
-    
-    
+    third_constraint = And([Or(Not(Equals(u, Int(1))), Not(Equals(v, Int(1))))for (u, v) in non_edge_group_variables]) 
+
     phi = And(first_constraint, sum_second_constraint, third_constraint, first_formula)
-    #print(phi)
     print(get_model(phi))
     
     
