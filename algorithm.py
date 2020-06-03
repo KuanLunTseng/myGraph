@@ -373,6 +373,37 @@ def clique_to_sat(graph, k):
 
     phi = And(first_constraint, sum_second_constraint, third_constraint, first_formula)
     print(get_model(phi))
-    
-    
+        
+def is_clique(vertices):
+    """
+    Return true if given set of vertices can form a clique, otherwise, false.
+    """
+    if all(u in v.neighbors for u in vertices for v in vertices if u != v):
+        return True
+    return False
+        
+def brutal_kclique(graph):
 
+    # 1-clique
+    clique = [[v] for v in graph.vertices]
+    
+    # Exhaustive DFS search to find the maximum size clique in the given graph, extend solution from 1-cliques
+    for c in clique:
+        for v in graph.vertices:
+            if v not in c:
+                c.append(v)
+                if not is_clique(c):
+                    c.remove(v)
+                    
+    k = max(len(c) for c in clique)
+    print('Maximum size of clique in this graph is %d' % k)
+    print([[v.name for v in c]for c in clique if len(c) == k])
+    
+    
+    
+    
+    
+    
+    
+    
+    

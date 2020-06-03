@@ -83,7 +83,13 @@ if __name__ == "__main__":
     #print(dfs_shortest_length(graph, source, target, 0))
     
     ## k-clique reduction test case
-    graph = init_five_clique()
+    graph = init_graph_toy_clique_problem()
     k = 3
-    clique_to_sat(graph, k)
+    #clique_to_sat(graph, k)
+    #brutal_kclique(graph)
+    
+    ## json file transform to a graph test case
+    graph = init_graph_mfriend()
+    
+   
    
