@@ -484,7 +484,8 @@ def init_graph_mfriend():
                             edges.append(uv)
                             for e in edges:
                                 if (uv.source.name, uv.target.name) == (e.source.name, e.target.name) or (uv.target.name, uv.source.name) == (e.source.name, e.target.name):
-                                    edges.remove(uv)
+                                    pass
+                                    
     
     graph = Graph()
     init_graph(graph, vertices, edges)
