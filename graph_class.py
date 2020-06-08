@@ -33,7 +33,9 @@ class Graph(object):
                 edge.target.outgoing_edges.append(second_edge)
                 edge.source.incoming_edges.append(second_edge)
                 edge.target.neighbors.append(edge.source)
+                edge.target.neighbors = list(set(edge.target.neighbors))
                 edge.source.neighbors.append(edge.target)
+                edge.source.neighbors = list(set(edge.source.neighbors))
                 
     def __str__(self):
         return '\nVertices :\n%s\n\nEdges :\n%s' %(str([v.name for v in self.vertices]), str([e.name for e in self.edges]))    

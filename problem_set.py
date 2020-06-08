@@ -490,8 +490,11 @@ def init_graph_mfriend():
     graph = Graph()
     init_graph(graph, vertices, edges)
     
+    '''
     for v in graph.vertices:
         print(v.name)
         print([k.name for k in v.neighbors])
         print('')
+    '''
         
+    return graph

@@ -91,5 +91,12 @@ if __name__ == "__main__":
     ## json file transform to a graph test case
     graph = init_graph_mfriend()
     
+    for v in graph.vertices:
+        print(v.name)
+        print([k.name for k in v.neighbors])
+        print([(e.target.name, e.source.name)for e in v.outgoing_edges])
+        print('')
+  
+    clique_to_sat(graph, 2)
    
    

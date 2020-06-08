@@ -1,8 +1,9 @@
 from copy import deepcopy as cpy
 import json 
 import random
+from name import *
 
-NAME = ["Aaron", "Baldhere", "Camillia", "Dunstin", "Eulalia", "Francisco", "Gregory", "Hinrick", "Irina", "Jovonnah", "Krystiano", "Lucena", "Martha", "Norris", "Owain", "Pyrena", "Quinn", "Renato", "Salomon", "Toynetta", "Una", "Verlin", "Wythe", "Xena", "York", "Zaza"]
+NAME = k_list(3)
 NUM = len(NAME)
 
 class Person(object):
@@ -42,7 +43,7 @@ def read_json_file():
 
 def main():
     # You should comment out the code below because you only need it once
-    #write_json_file()
+    write_json_file()
     
     network = read_json_file()
     for n in network:

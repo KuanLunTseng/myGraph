@@ -354,6 +354,7 @@ def clique_to_sat(graph, k):
     flatten = lambda list : [item for sublist in list for item in sublist]
     flat_vertices = flatten(copy_k_vertices(graph.vertices, k))
     variables = [Symbol(v.name, INT) for v in flat_vertices]
+    print(variables)
     first_formula = And([And(GE(v, Int(0)), LE(v, Int(1))) for v in variables])
     
     # 1st Constraint
