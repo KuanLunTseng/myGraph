@@ -467,9 +467,9 @@ def init_graph_toy_clique_problem():
     
     return graph
     
-def init_graph_mfriend():
+def init_graph_mfriend(k):
     
-    jfile = read_json_file()
+    jfile = mfriend(k)
     vertices = [Vertex(j.name) for j in jfile]
     
     edges = []
@@ -489,12 +489,5 @@ def init_graph_mfriend():
     
     graph = Graph()
     init_graph(graph, vertices, edges)
-    
-    '''
-    for v in graph.vertices:
-        print(v.name)
-        print([k.name for k in v.neighbors])
-        print('')
-    '''
         
     return graph

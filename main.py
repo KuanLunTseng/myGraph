@@ -2,6 +2,7 @@ from algorithm import *
 from graph_class import *
 from heap import *
 from problem_set import *
+import time
 
 def dory_dfs(vertex):
     global call
@@ -86,17 +87,18 @@ if __name__ == "__main__":
     graph = init_graph_toy_clique_problem()
     k = 3
     #clique_to_sat(graph, k)
-    #brutal_kclique(graph)
+    
     
     ## json file transform to a graph test case
-    graph = init_graph_mfriend()
-    
-    for v in graph.vertices:
-        print(v.name)
-        print([k.name for k in v.neighbors])
-        print([(e.target.name, e.source.name)for e in v.outgoing_edges])
+    for i in range(1, 100):
+        
+        graph = init_graph_mfriend(i)
+        
+        brute_time = time.time()
+        k = brutal_kclique(graph)
+        print("brute --- %s seconds ---" % (time.time() - brute_time))
+        
+        sat_time = time.time()
+        clique_to_sat(graph, k)
+        print("sat solver --- %s seconds ---" % (time.time() - sat_time))
         print('')
-  
-    clique_to_sat(graph, 2)
-   
-   
