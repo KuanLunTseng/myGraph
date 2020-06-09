@@ -1,8 +1,11 @@
 from algorithm import *
 from graph_class import *
 from heap import *
+from memory_profiler import *
 from problem_set import *
+import sys
 import time
+
 
 def dory_dfs(vertex):
     global call
@@ -12,7 +15,7 @@ def dory_dfs(vertex):
         dory_dfs(e.target)
 
 if __name__ == "__main__":
-    
+    '''
     graph = init_graph_johnson()
     dict = johnson(graph)
     #print(dict)
@@ -87,18 +90,23 @@ if __name__ == "__main__":
     graph = init_graph_toy_clique_problem()
     k = 3
     #clique_to_sat(graph, k)
-    
+    '''
     
     ## json file transform to a graph test case
     for i in range(1, 100):
-        
+        #mem_usage = memory_usage(-1, interval=.2, timeout=1)
         graph = init_graph_mfriend(i)
+        
+        output = open('output.txt', 'a') 
         
         brute_time = time.time()
         k = brutal_kclique(graph)
-        print("brute --- %s seconds ---" % (time.time() - brute_time))
+        brute_cost = time.time() - brute_time
         
         sat_time = time.time()
         clique_to_sat(graph, k)
-        print("sat solver --- %s seconds ---" % (time.time() - sat_time))
-        print('')
+        sat_cost = time.time() - sat_time
+        
+        
+        output.write("%s,%s,%s\n" % (i, brute_cost, sat_cost))
+        

@@ -6,6 +6,7 @@ from pysmt.shortcuts import *
 from pysmt.typing import *
 import random
 
+
 """
 Quick review of adding elements to list in Python
 
@@ -341,6 +342,7 @@ def dfs_shortest_length(graph, source, target, weight):
 def copy_k_vertices(variables, k):
     return [[Vertex(v.name+str(i)) for i in range(k)] for v in variables]
     
+@profile
 def clique_to_sat(graph, k):
     """
     Clique problem:
@@ -372,7 +374,7 @@ def clique_to_sat(graph, k):
     third_constraint = And([Or(Not(Equals(u, Int(1))), Not(Equals(v, Int(1))))for (u, v) in non_edge_group_variables]) 
 
     phi = And(first_constraint, sum_second_constraint, third_constraint, first_formula)
-    #print(get_model(phi))
+    get_model(phi)
         
 def is_clique(vertices):
     """
@@ -382,7 +384,7 @@ def is_clique(vertices):
     if all(u in v.neighbors for u in vertices for v in vertices if u != v):
         return True
     return False
-        
+         
 def brutal_kclique(graph):
     """
     An oracle that tells the maximum size of clique in a given graph.
