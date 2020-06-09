@@ -10,15 +10,10 @@ for i in f:
     k.append(detail[0])
     brute.append(round(float(detail[1]), 2))
     sat.append(round(float(detail[2]), 2))
-'''
-print(k)
-print(brute)
-print(sat)
-'''
+    
 x = k
 y1 = brute
 y2 = sat
-
 
 f.close()
 
