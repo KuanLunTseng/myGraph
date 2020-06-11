@@ -21,6 +21,8 @@ class Graph(object):
                 self.edges.append(edge)
                 edge.source.outgoing_edges.append(edge)
                 edge.target.incoming_edges.append(edge)
+                edge.source.neighbors.append(edge.target)
+                edge.target.neighbors.append(edge.source)
             if not edge.directed:
                 edge.directed = True
                 second_edge = Edge((edge.target, edge.source), weight=edge.weight)
