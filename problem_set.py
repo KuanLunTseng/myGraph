@@ -2,8 +2,6 @@ from algorithm import *
 from copy import deepcopy as cpy 
 from graph_class import *
 from heap import *
-from pysmt import *
-from mfriend import *
 
 def init_graph_bfs():
     r = Vertex('r')
@@ -467,27 +465,3 @@ def init_graph_toy_clique_problem():
     
     return graph
     
-def init_graph_mfriend(k):
-    
-    jfile = mfriend(k)
-    vertices = [Vertex(j.name) for j in jfile]
-    
-    edges = []
-    
-    for j in jfile:
-        for u in vertices:
-            if j.name == u.name:
-                for f in j.friend_list:
-                    for v in vertices:
-                        if v.name == f:
-                            uv = Edge((u, v), directed=False)
-                            edges.append(uv)
-                            for e in edges:
-                                if (uv.source.name, uv.target.name) == (e.source.name, e.target.name) or (uv.target.name, uv.source.name) == (e.source.name, e.target.name):
-                                    pass
-                                    
-    
-    graph = Graph()
-    init_graph(graph, vertices, edges)
-        
-    return graph
